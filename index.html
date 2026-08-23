@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SHRI JAGDAMBA IND - Edible Oil Mill Daily Operations Monitor</title>
+  
+  <!-- Progressive Web App (PWA) Manifest & Meta Tags -->
+  <meta name="theme-color" content="#4F6C47" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="application-name" content="Shri Jagdamba" />
+  <link rel="icon" sizes="192x192" href="https://img.icons8.com/color/192/factory.png" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React and ReactDOM CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  
+  <!-- Babel Standalone for inline JSX compilation -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Custom Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          },
+          colors: {
+            offwhite: '#FAF9F5',
+            offwhiteCard: '#FFFFFF',
+            offwhiteBorder: '#E9E7DF',
+            sage: {
+              50: '#F4F7F3',
+              100: '#E4ECE1',
+              200: '#C7D7C1',
+              300: '#A3BD9B',
+              400: '#83A37A',
+              500: '#64855B',
+              600: '#4F6C47',
+              700: '#3D5337',
+              800: '#2C3C28',
+              900: '#1B2519',
+            },
+            bark: {
+              500: '#4A463D',
+              800: '#23211C',
+            }
+          },
+          boxShadow: {
+            'soft-sm': '0 2px 8px -2px rgba(40, 50, 35, 0.04)',
+            'soft': '0 4px 20px -4px rgba(40, 50, 35, 0.06)',
+            'soft-lg': '0 12px 32px -6px rgba(30, 40, 25, 0.08)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #FAF9F5;
+      color: #23211C;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    @keyframes entryFadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(12px) scale(0.99);
+        background-color: rgba(100, 133, 91, 0.15);
+      }
+      50% {
+        background-color: rgba(100, 133, 91, 0.08);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        background-color: transparent;
+      }
+    }
+
+    .animate-entry-fade {
+      animation: entryFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FAF9F5;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D8D4C7;
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #B0AAA0;
+    }
+  </style>
+</head>
+<body class="min-h-screen selection:bg-sage-200">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    
+    const Logo = () => (
+      <svg className="h-10 w-auto" viewBox="0 0 380 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="98,8 108,18 98,28 88,18" fill="#E52320" />
+        <polygon points="98,8 108,18 98,20 88,18" fill="#FF5252" />
+        <path d="M 68 35 C 75 18, 52 10, 32 20 C 12 30, 8 52, 26 65 C 48 80, 78 88, 55 106 C 36 120, 10 108, 18 92" stroke="#E52320" strokeWidth="12" strokeLinecap="round" fill="none"/>
+        <path d="M 98 28 L 98 90 C 98 112, 60 120, 30 110" stroke="#E52320" strokeWidth="12" strokeLinecap="round" fill="none"/>
+        <circle cx="98" cy="55" r="5" fill="#E52320" />
+        <circle cx="98" cy="55" r="2" fill="#FFFFFF" />
+        
+        <text x="135" y="55" fontFamily="serif" fontSize="32" fontWeight="800" fill="#E52320" letterSpacing="0.5">Shri Jagdamba</text>
+        <line x1="135" y1="78" x2="182" y2="78" stroke="#111" strokeWidth="5" strokeLinecap="round" />
+        <text x="190" y="86" fontFamily="sans-serif" fontSize="28" fontWeight="800" fill="#111" letterSpacing="0.5">Industry</text>
+        <line x1="315" y1="78" x2="362" y2="78" stroke="#111" strokeWidth="5" strokeLinecap="round" />
+      </svg>
+    );
+
+    const Icons = {
+      Plus: () => (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+        </svg>
+      ),
+      Search: () => (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      ),
+      Users: () => (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5 5 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+      ),
+      Download: () => (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+      )
+    };
+
+    const OIL_SEEDS_LIST = [
+      { id: 'groundnut', name: 'Groundnut (Peanut)', icon: '🥜', defaultYield: 0.40 },
+      { id: 'sunflower', name: 'Sunflower Seed', icon: '🌻', defaultYield: 0.38 },
+      { id: 'safflower', name: 'Safflower (Kardai)', icon: '🌼', defaultYield: 0.32 },
+      { id: 'sesame', name: 'Sesame Seed (Til)', icon: '🌱', defaultYield: 0.44 },
+      { id: 'mustard', name: 'Mustard Seed', icon: '🌾', defaultYield: 0.38 },
+      { id: 'coconut', name: 'Coconut (Copra)', icon: '🥥', defaultYield: 0.62 },
+      { id: 'flaxseed', name: 'Flaxseed (Jawas / Linseed)', icon: '🌿', defaultYield: 0.35 }
+    ];
+
+    const INITIAL_CUSTOMERS = [
+      { id: 'CUST-101', name: 'Apex Foods Ltd', contact: 'Rajesh Sharma', phone: '+91 98230 44110', email: 'orders@apexfoods.com', address: 'Plot 42, Industrial Zone, Pune', balance: 45000, creditLimit: 200000, totalOrders: 18 },
+      { id: 'CUST-102', name: 'Golden Spoon Bakery', contact: 'Meera Patel', phone: '+91 97112 88320', email: 'meera@goldenspoon.in', address: 'Market Yard Road, Nashik', balance: 0, creditLimit: 100000, totalOrders: 12 },
+      { id: 'CUST-103', name: 'Standard Wholesalers', contact: 'Anil Agarwal', phone: '+91 94220 11299', email: 'anil@standardwholesale.com', address: 'Ganj Peth, Solapur', balance: 128000, creditLimit: 300000, totalOrders: 34 },
+      { id: 'CUST-104', name: 'Swad Organic Retail', contact: 'Kavita Deshmukh', phone: '+91 98901 33455', email: 'kavita@swadorganic.org', address: 'Model Colony, Chinchwad', balance: 12500, creditLimit: 50000, totalOrders: 7 },
+    ];
+
+    const INITIAL_LOGS = [
+      { id: 'LOG-1020', date: '2026-08-22', time: '14:30', type: 'Crushing', category: 'crushing', seedType: 'Groundnut (Peanut)', seedQtyKg: 5000, oilProducedLitres: 2000, cakeProducedKg: 2900, operator: 'Suresh Kumar', notes: 'Shift A - Oil yield 40%', amount: null },
+      { id: 'LOG-1019', date: '2026-08-22', time: '11:15', type: 'Order Received', category: 'order', customerName: 'Apex Foods Ltd', product: 'Filtered Groundnut Oil (15L Tin)', qty: '100 Tins', amount: 195000, status: 'Pending Dispatch', operator: 'Amit (Sales)' },
+      { id: 'LOG-1018', date: '2026-08-21', time: '16:45', type: 'Payment Received', category: 'payment', customerName: 'Golden Spoon Bakery', amount: 85000, mode: 'Bank Transfer (NEFT)', refNo: 'UTIBR2026082109', operator: 'Accounts' },
+      { id: 'LOG-1017', date: '2026-08-21', time: '09:30', type: 'Crushing', category: 'crushing', seedType: 'Sunflower Seed', seedQtyKg: 4500, oilProducedLitres: 1710, cakeProducedKg: 2650, operator: 'Prakash M', notes: 'Normal Yield 38%', amount: null },
+      { id: 'LOG-1016', date: '2026-08-20', time: '17:00', type: 'Order Delivered', category: 'delivery', customerName: 'Standard Wholesalers', product: 'Sesame Oil Cake', qty: '80 Bags', amount: 112000, operator: 'Logistics' },
+      { id: 'LOG-1015', date: '2026-08-20', time: '10:00', type: 'Crushing', category: 'crushing', seedType: 'Coconut (Copra)', seedQtyKg: 3000, oilProducedLitres: 1860, cakeProducedKg: 1100, operator: 'Suresh Kumar', notes: 'Shift B - Yield 62%', amount: null },
+      { id: 'LOG-1014', date: '2026-08-18', time: '15:20', type: 'Crushing', category: 'crushing', seedType: 'Mustard Seed', seedQtyKg: 6000, oilProducedLitres: 2280, cakeProducedKg: 3550, operator: 'Prakash M', amount: null },
+      { id: 'LOG-1013', date: '2026-08-18', time: '12:00', type: 'Payment Received', category: 'payment', customerName: 'Apex Foods Ltd', amount: 150000, mode: 'UPI', refNo: 'UPI9823011', operator: 'Accounts' },
+      { id: 'LOG-1012', date: '2026-08-16', time: '11:00', type: 'Crushing', category: 'crushing', seedType: 'Safflower (Kardai)', seedQtyKg: 5500, oilProducedLitres: 1760, cakeProducedKg: 3600, operator: 'Suresh Kumar', amount: null },
+      { id: 'LOG-1011', date: '2026-08-15', time: '14:10', type: 'Order Received', category: 'order', customerName: 'Swad Organic Retail', product: 'Cold Pressed Sesame Oil', qty: '40 Tins', amount: 88000, operator: 'Sales Desk' },
+      { id: 'LOG-1010', date: '2026-08-14', time: '09:00', type: 'Crushing', category: 'crushing', seedType: 'Sesame Seed (Til)', seedQtyKg: 4000, oilProducedLitres: 1760, cakeProducedKg: 2150, operator: 'Prakash M', amount: null },
+      { id: 'LOG-1009', date: '2026-08-12', time: '13:00', type: 'Crushing', category: 'crushing', seedType: 'Flaxseed (Jawas / Linseed)', seedQtyKg: 3500, oilProducedLitres: 1225, cakeProducedKg: 2200, operator: 'Suresh Kumar', amount: null },
+      { id: 'LOG-1008', date: '2026-08-10', time: '10:30', type: 'Crushing', category: 'crushing', seedType: 'Groundnut (Peanut)', seedQtyKg: 7000, oilProducedLitres: 2800, cakeProducedKg: 4050, operator: 'Prakash M', amount: null },
+      { id: 'LOG-1007', date: '2026-08-08', time: '16:00', type: 'Payment Received', category: 'payment', customerName: 'Standard Wholesalers', amount: 200000, mode: 'Bank Transfer', refNo: 'RTGS9921', operator: 'Accounts' },
+      { id: 'LOG-1006', date: '2026-08-05', time: '11:45', type: 'Crushing', category: 'crushing', seedType: 'Sunflower Seed', seedQtyKg: 6200, oilProducedLitres: 2356, cakeProducedKg: 3700, operator: 'Suresh Kumar', amount: null },
+      { id: 'LOG-1005', date: '2026-08-02', time: '09:30', type: 'Crushing', category: 'crushing', seedType: 'Groundnut (Peanut)', seedQtyKg: 8000, oilProducedLitres: 3200, cakeProducedKg: 4650, operator: 'Prakash M', amount: null },
+      { id: 'LOG-0950', date: '2026-07-25', time: '10:00', type: 'Crushing', category: 'crushing', seedType: 'Groundnut (Peanut)', seedQtyKg: 12000, oilProducedLitres: 4800, cakeProducedKg: 7000, operator: 'Suresh Kumar', amount: null },
+      { id: 'LOG-0949', date: '2026-07-15', time: '11:00', type: 'Order Received', category: 'order', customerName: 'Apex Foods Ltd', amount: 420000, operator: 'Sales Desk' },
+      { id: 'LOG-0948', date: '2026-07-18', time: '15:00', type: 'Payment Received', category: 'payment', customerName: 'Apex Foods Ltd', amount: 380000, operator: 'Accounts' },
+      { id: 'LOG-0900', date: '2026-06-20', time: '10:00', type: 'Crushing', category: 'crushing', seedType: 'Sunflower Seed', seedQtyKg: 15000, oilProducedLitres: 5700, cakeProducedKg: 8900, operator: 'Prakash M', amount: null },
+      { id: 'LOG-0899', date: '2026-06-12', time: '14:00', type: 'Order Received', category: 'order', customerName: 'Standard Wholesalers', amount: 350000, operator: 'Sales Desk' },
+      { id: 'LOG-0898', date: '2026-06-15', time: '16:00', type: 'Payment Received', category: 'payment', customerName: 'Standard Wholesalers', amount: 310000, operator: 'Accounts' }
+    ];
+
+    function App() {
+      const [logs, setLogs] = React.useState(() => {
+        try {
+          const saved = localStorage.getItem('jagdamba_logs');
+          return saved ? JSON.parse(saved) : INITIAL_LOGS;
+        } catch(e) {
+          return INITIAL_LOGS;
+        }
+      });
+
+      const [customers, setCustomers] = React.useState(() => {
+        try {
+          const saved = localStorage.getItem('jagdamba_customers');
+          return saved ? JSON.parse(saved) : INITIAL_CUSTOMERS;
+        } catch(e) {
+          return INITIAL_CUSTOMERS;
+        }
+      });
+
+      React.useEffect(() => {
+        try {
+          localStorage.setItem('jagdamba_logs', JSON.stringify(logs));
+        } catch(e) {}
+      }, [logs]);
+
+      React.useEffect(() => {
+        try {
+          localStorage.setItem('jagdamba_customers', JSON.stringify(customers));
+        } catch(e) {}
+      }, [customers]);
+
+      const [activeTab, setActiveTab] = React.useState('dashboard');
+      
+      const [filterCategory, setFilterCategory] = React.useState('all');
+      const [searchQuery, setSearchQuery] = React.useState('');
+      const [customerSearch, setCustomerSearch] = React.useState('');
+      const [selectedMonth, setSelectedMonth] = React.useState('2026-08');
+      const [selectedSeedFilter, setSelectedSeedFilter] = React.useState('all');
+      const [graphViewMode, setGraphViewMode] = React.useState('daily');
+      const [activeHoverBar, setActiveHoverBar] = React.useState(null);
+      
+      const [activeModal, setActiveModal] = React.useState(null);
+      const [prefilledCustomer, setPrefilledCustomer] = React.useState('');
+      const [newlyAddedId, setNewlyAddedId] = React.useState(null);
+      const [toastMsg, setToastMsg] = React.useState('');
+
+      const inventory = React.useMemo(() => {
+        let totalSeedKg = 48500;
+        let totalOilLitres = 18200;
+        let totalCakeKg = 24400;
+
+        const seedBreakdown = {};
+        OIL_SEEDS_LIST.forEach(s => {
+          seedBreakdown[s.name] = { seedKg: 5000, oilLitres: 2000, cakeKg: 3000 };
+        });
+
+        logs.forEach(log => {
+          if (log.category === 'seed_add') {
+            totalSeedKg += Number(log.seedQtyKg || 0);
+            if (seedBreakdown[log.seedType]) {
+              seedBreakdown[log.seedType].seedKg += Number(log.seedQtyKg || 0);
+            }
+          }
+          if (log.category === 'crushing') {
+            totalSeedKg -= Number(log.seedQtyKg || 0);
+            totalOilLitres += Number(log.oilProducedLitres || 0);
+            totalCakeKg += Number(log.cakeProducedKg || 0);
+            
+            if (seedBreakdown[log.seedType]) {
+              seedBreakdown[log.seedType].seedKg = Math.max(0, seedBreakdown[log.seedType].seedKg - Number(log.seedQtyKg || 0));
+              seedBreakdown[log.seedType].oilLitres += Number(log.oilProducedLitres || 0);
+              seedBreakdown[log.seedType].cakeKg += Number(log.cakeProducedKg || 0);
+            }
+          }
+        });
+
+        return { totalSeedKg, totalOilLitres, totalCakeKg, seedBreakdown };
+      }, [logs]);
+
+      const dailyGraphData = React.useMemo(() => {
+        const [year, month] = selectedMonth.split('-').map(Number);
+        const daysInMonth = new Date(year, month, 0).getDate();
+        
+        const days = Array.from({ length: daysInMonth }, (_, i) => {
+          const dayNum = (i + 1).toString().padStart(2, '0');
+          const dateStr = `${selectedMonth}-${dayNum}`;
+          return {
+            date: dateStr,
+            dayLabel: `${i + 1}`,
+            seedCrushedKg: 0,
+            oilProducedLitres: 0,
+            cakeProducedKg: 0,
+            ordersAmount: 0,
+            paymentsAmount: 0
+          };
+        });
+
+        logs.forEach(log => {
+          if (log.date && log.date.startsWith(selectedMonth)) {
+            const dayIndex = parseInt(log.date.split('-')[2], 10) - 1;
+            if (dayIndex >= 0 && dayIndex < daysInMonth) {
+              if (log.category === 'crushing') {
+                days[dayIndex].seedCrushedKg += Number(log.seedQtyKg || 0);
+                days[dayIndex].oilProducedLitres += Number(log.oilProducedLitres || 0);
+                days[dayIndex].cakeProducedKg += Number(log.cakeProducedKg || 0);
+              }
+              if (log.category === 'order') {
+                days[dayIndex].ordersAmount += Number(log.amount || 0);
+              }
+              if (log.category === 'payment') {
+                days[dayIndex].paymentsAmount += Number(log.amount || 0);
+              }
+            }
+          }
+        });
+
+        return days;
+      }, [logs, selectedMonth]);
+
+      const monthlyGraphData = React.useMemo(() => {
+        const monthsList = [
+          { label: 'Mar 2026', key: '2026-03' },
+          { label: 'Apr 2026', key: '2026-04' },
+          { label: 'May 2026', key: '2026-05' },
+          { label: 'Jun 2026', key: '2026-06' },
+          { label: 'Jul 2026', key: '2026-07' },
+          { label: 'Aug 2026', key: '2026-08' },
+        ];
+
+        return monthsList.map(m => {
+          let seedCrushedKg = 0;
+          let oilProducedLitres = 0;
+          let ordersAmount = 0;
+          let paymentsAmount = 0;
+
+          logs.forEach(l => {
+            if (l.date && l.date.startsWith(m.key)) {
+              if (l.category === 'crushing') {
+                seedCrushedKg += Number(l.seedQtyKg || 0);
+                oilProducedLitres += Number(l.oilProducedLitres || 0);
+              }
+              if (l.category === 'order') ordersAmount += Number(l.amount || 0);
+              if (l.category === 'payment') paymentsAmount += Number(l.amount || 0);
+            }
+          });
+
+          return {
+            ...m,
+            seedCrushedTons: (seedCrushedKg / 1000).toFixed(1),
+            oilProducedLitres,
+            ordersAmount,
+            paymentsAmount
+          };
+        });
+      }, [logs]);
+
+      const seedDistributionData = React.useMemo(() => {
+        const breakdown = {};
+        OIL_SEEDS_LIST.forEach(s => {
+          breakdown[s.name] = { name: s.name, icon: s.icon, seedCrushedKg: 0, oilProducedLitres: 0 };
+        });
+
+        logs.forEach(l => {
+          if (l.category === 'crushing' && breakdown[l.seedType]) {
+            breakdown[l.seedType].seedCrushedKg += Number(l.seedQtyKg || 0);
+            breakdown[l.seedType].oilProducedLitres += Number(l.oilProducedLitres || 0);
+          }
+        });
+
+        return Object.values(breakdown);
+      }, [logs]);
+
+      const monthlyMetrics = React.useMemo(() => {
+        const monthLogs = logs.filter(l => l.date && l.date.startsWith(selectedMonth));
+        
+        let seedAdded = 0;
+        let seedCrushed = 0;
+        let oilProduced = 0;
+        let cakeProduced = 0;
+        let ordersValue = 0;
+        let paymentsCollected = 0;
+
+        monthLogs.forEach(l => {
+          if (l.category === 'seed_add') seedAdded += Number(l.seedQtyKg || 0);
+          if (l.category === 'crushing') {
+            seedCrushed += Number(l.seedQtyKg || 0);
+            oilProduced += Number(l.oilProducedLitres || 0);
+            cakeProduced += Number(l.cakeProducedKg || 0);
+          }
+          if (l.category === 'order') ordersValue += Number(l.amount || 0);
+          if (l.category === 'payment') paymentsCollected += Number(l.amount || 0);
+        });
+
+        const extractionRate = seedCrushed > 0 ? ((oilProduced / seedCrushed) * 100).toFixed(1) : '0.0';
+
+        return {
+          seedAdded,
+          seedCrushed,
+          oilProduced,
+          cakeProduced,
+          ordersValue,
+          paymentsCollected,
+          extractionRate,
+          totalEntries: monthLogs.length
+        };
+      }, [logs, selectedMonth]);
+
+      const triggerToast = (msg) => {
+        setToastMsg(msg);
+        setTimeout(() => setToastMsg(''), 3500);
+      };
+
+      const handleAddSeed = (e) => {
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        const newLog = {
+          id: 'LOG-' + (Math.floor(1000 + Math.random() * 9000)),
+          date: fd.get('date'),
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          type: 'Seed Addition',
+          category: 'seed_add',
+          seedType: fd.get('seedType'),
+          supplier: fd.get('supplier'),
+          seedQtyKg: Number(fd.get('seedQtyKg')),
+          costPerTon: Number(fd.get('costPerTon') || 0),
+          amount: (Number(fd.get('seedQtyKg')) / 1000) * Number(fd.get('costPerTon') || 0),
+          operator: fd.get('operator') || 'Yard Staff'
+        };
+
+        setLogs([newLog, ...logs]);
+        setNewlyAddedId(newLog.id);
+        setActiveModal(null);
+        triggerToast('🌾 Seed stock addition logged successfully!');
+      };
+
+      const handleLogCrushing = (e) => {
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        const newLog = {
+          id: 'LOG-' + (Math.floor(1000 + Math.random() * 9000)),
+          date: fd.get('date'),
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          type: 'Crushing',
+          category: 'crushing',
+          seedType: fd.get('seedType'),
+          seedQtyKg: Number(fd.get('seedQtyKg')),
+          oilProducedLitres: Number(fd.get('oilProducedLitres')),
+          cakeProducedKg: Number(fd.get('cakeProducedKg')),
+          operator: fd.get('operator') || 'Mill Supervisor',
+          notes: fd.get('notes') || 'Daily shift crushing run'
+        };
+
+        setLogs([newLog, ...logs]);
+        setNewlyAddedId(newLog.id);
+        setActiveModal(null);
+        triggerToast('⚙️ Daily Crushing & Oil Output recorded!');
+      };
+
+      const handleNewOrder = (e) => {
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        const custName = fd.get('customerName');
+        const amount = Number(fd.get('amount'));
+        
+        const newLog = {
+          id: 'LOG-' + (Math.floor(1000 + Math.random() * 9000)),
+          date: fd.get('date'),
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          type: 'Order Received',
+          category: 'order',
+          customerName: custName,
+          product: fd.get('product'),
+          qty: fd.get('qty'),
+          amount: amount,
+          status: 'Pending Dispatch',
+          operator: fd.get('operator') || 'Sales Desk'
+        };
+
+        setCustomers(customers.map(c => {
+          if (c.name === custName) {
+            return { ...c, totalOrders: c.totalOrders + 1, balance: c.balance + amount };
+          }
+          return c;
+        }));
+
+        setLogs([newLog, ...logs]);
+        setNewlyAddedId(newLog.id);
+        setActiveModal(null);
+        triggerToast('🛒 New Customer Order logged and balance updated!');
+      };
+
+      const handleLogPayment = (e) => {
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        const custName = fd.get('customerName');
+        const amount = Number(fd.get('amount'));
+
+        const newLog = {
+          id: 'LOG-' + (Math.floor(1000 + Math.random() * 9000)),
+          date: fd.get('date'),
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          type: 'Payment Received',
+          category: 'payment',
+          customerName: custName,
+          amount: amount,
+          mode: fd.get('mode'),
+          refNo: fd.get('refNo') || 'N/A',
+          operator: 'Accounts'
+        };
+
+        setCustomers(customers.map(c => {
+          if (c.name === custName) {
+            return { ...c, balance: Math.max(0, c.balance - amount) };
+          }
+          return c;
+        }));
+
+        setLogs([newLog, ...logs]);
+        setNewlyAddedId(newLog.id);
+        setActiveModal(null);
+        triggerToast('💳 Payment collection recorded!');
+      };
+
+      const handleAddCustomer = (e) => {
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        const newCust = {
+          id: 'CUST-' + (100 + customers.length + 1),
+          name: fd.get('name'),
+          contact: fd.get('contact'),
+          phone: fd.get('phone'),
+          email: fd.get('email') || 'N/A',
+          address: fd.get('address'),
+          balance: Number(fd.get('openingBalance') || 0),
+          creditLimit: Number(fd.get('creditLimit') || 100000),
+          totalOrders: 0
+        };
+
+        setCustomers([...customers, newCust]);
+        setActiveModal(null);
+        triggerToast('👤 New Customer added to Directory!');
+      };
+
+      const exportCSV = () => {
+        let csvContent = "data:text/csv;charset=utf-8,ID,Date,Time,Type,Category,Seed Type,Seed Qty (Kg),Oil Produced (L),Cake Produced (Kg),Customer,Amount (INR),Operator\n";
+        logs.forEach(l => {
+          csvContent += `"${l.id}","${l.date}","${l.time}","${l.type}","${l.category}","${l.seedType || ''}","${l.seedQtyKg || ''}","${l.oilProducedLitres || ''}","${l.cakeProducedKg || ''}","${l.customerName || ''}","${l.amount || ''}","${l.operator || ''}"\n`;
+        });
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `Shri_Jagdamba_Logs_${selectedMonth}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        triggerToast("📥 Exported logs to CSV file!");
+      };
+
+      const filteredLogs = logs.filter(l => {
+        const matchesCategory = filterCategory === 'all' || l.category === filterCategory;
+        const matchesSearch = searchQuery === '' || 
+          l.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (l.customerName && l.customerName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+          (l.seedType && l.seedType.toLowerCase().includes(searchQuery.toLowerCase())) ||
+          (l.operator && l.operator.toLowerCase().includes(searchQuery.toLowerCase()));
+        return matchesCategory && matchesSearch;
+      });
+
+      const filteredCustomers = customers.filter(c => 
+        c.name.toLowerCase().includes(customerSearch.toLowerCase()) ||
+        c.contact.toLowerCase().includes(customerSearch.toLowerCase()) ||
+        c.phone.toLowerCase().includes(customerSearch.toLowerCase()) ||
+        c.id.toLowerCase().includes(customerSearch.toLowerCase())
+      );
+
+      return (
+        <div className="min-h-screen flex flex-col pb-16">
+          
+          <header className="bg-offwhiteCard border-b border-offwhiteBorder sticky top-0 z-30 shadow-soft-sm backdrop-blur-md bg-opacity-95">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-4">
+              
+              <div className="flex items-center space-x-3">
+                <div className="bg-white p-1.5 rounded-2xl border border-stone-200 shadow-sm flex items-center justify-center">
+                  <Logo />
+                </div>
+                <div className="hidden sm:block border-l border-stone-200 pl-3">
+                  <div className="flex items-center space-x-2">
+                    <h1 className="text-base font-extrabold text-bark-800 tracking-wide uppercase">SHRI JAGDAMBA IND</h1>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-sage-100 text-sage-800 font-bold">Daily Monitor</span>
+                  </div>
+                  <p className="text-[11px] text-stone-500 font-medium">Edible Oil Extraction & Processing Unit</p>
+                </div>
+              </div>
+
+              <nav className="flex items-center space-x-1 bg-offwhite p-1 rounded-2xl border border-offwhiteBorder">
+                <button 
+                  onClick={() => setActiveTab('dashboard')}
+                  className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all ${activeTab === 'dashboard' ? 'bg-white text-sage-800 shadow-soft font-bold' : 'text-stone-600 hover:text-stone-900 font-medium'}`}
+                >
+                  Dashboard & Progress
+                </button>
+                <button 
+                  onClick={() => setActiveTab('logs')}
+                  className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center space-x-1.5 ${activeTab === 'logs' ? 'bg-white text-sage-800 shadow-soft font-bold' : 'text-stone-600 hover:text-stone-900 font-medium'}`}
+                >
+                  <span>Daily Records</span>
+                  <span className="px-1.5 py-0.2 text-[10px] bg-sage-100 text-sage-700 rounded-full font-bold">{logs.length}</span>
+                </button>
+                <button 
+                  onClick={() => setActiveTab('customers')}
+                  className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all flex items-center space-x-1.5 ${activeTab === 'customers' ? 'bg-white text-sage-800 shadow-soft font-bold' : 'text-stone-600 hover:text-stone-900 font-medium'}`}
+                >
+                  <span>Customers Directory</span>
+                  <span className="px-1.5 py-0.2 text-[10px] bg-amber-100 text-amber-800 rounded-full font-bold">{customers.length}</span>
+                </button>
+              </nav>
+
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={exportCSV}
+                  className="p-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-600 transition-all text-xs font-semibold flex items-center space-x-1"
+                  title="Export Logs to CSV"
+                >
+                  <Icons.Download />
+                  <span className="hidden md:inline">Export</span>
+                </button>
+                <button
+                  onClick={() => setActiveModal('log_crushing')}
+                  className="bg-sage-600 hover:bg-sage-700 active:scale-95 transition-all text-white px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold shadow-sm flex items-center space-x-1.5"
+                >
+                  <Icons.Plus />
+                  <span>Quick Record Entry</span>
+                </button>
+              </div>
+
+            </div>
+          </header>
+
+          {toastMsg && (
+            <div className="fixed top-16 right-6 z-50 bg-sage-800 text-white px-4 py-3 rounded-2xl shadow-soft-lg flex items-center space-x-2 animate-bounce text-xs font-semibold">
+              <span>{toastMsg}</span>
+            </div>
+          )}
+
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6 flex-grow w-full">
+            
+            <div className="bg-offwhiteCard border border-offwhiteBorder p-4 sm:p-5 rounded-3xl shadow-soft flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div>
+                <span className="text-xs uppercase tracking-wider text-sage-600 font-bold">SHRI JAGDAMBA IND • Operations Control</span>
+                <h2 className="text-lg font-bold text-bark-800">Daily Operations & Task Logger</h2>
+                <p className="text-xs text-stone-500 mt-0.5">Record raw seed stock, crushing yield, orders, deliveries & payment receipts</p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                <button
+                  onClick={() => setActiveModal('add_seed')}
+                  className="flex-1 md:flex-initial px-3.5 py-2 rounded-xl bg-offwhite hover:bg-sage-50 text-stone-700 border border-offwhiteBorder text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors"
+                >
+                  <span>🌾 Seed Addition</span>
+                </button>
+                <button
+                  onClick={() => setActiveModal('log_crushing')}
+                  className="flex-1 md:flex-initial px-3.5 py-2 rounded-xl bg-sage-50 hover:bg-sage-100 text-sage-800 border border-sage-200 text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors"
+                >
+                  <span>⚙️ Crush & Oil Output</span>
+                </button>
+                <button
+                  onClick={() => { setPrefilledCustomer(''); setActiveModal('new_order'); }}
+                  className="flex-1 md:flex-initial px-3.5 py-2 rounded-xl bg-offwhite hover:bg-sage-50 text-stone-700 border border-offwhiteBorder text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors"
+                >
+                  <span>🛒 New Order</span>
+                </button>
+                <button
+                  onClick={() => { setPrefilledCustomer(''); setActiveModal('log_payment'); }}
+                  className="flex-1 md:flex-initial px-3.5 py-2 rounded-xl bg-offwhite hover:bg-sage-50 text-stone-700 border border-offwhiteBorder text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors"
+                >
+                  <span>💳 Payment Received</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="bg-white/60 border border-offwhiteBorder p-3 rounded-2xl flex flex-wrap items-center justify-between gap-2 text-xs">
+              <span className="font-bold text-stone-500 uppercase tracking-wider text-[10px]">Supported Oilseeds:</span>
+              <div className="flex flex-wrap items-center gap-2">
+                {OIL_SEEDS_LIST.map(seed => (
+                  <span key={seed.id} className="px-2.5 py-1 rounded-xl bg-offwhite border border-stone-200 font-medium text-stone-700 flex items-center space-x-1">
+                    <span>{seed.icon}</span>
+                    <span>{seed.name}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {activeTab === 'dashboard' && (
+              <div className="space-y-8 animate-entry-fade">
+                
+                <div className="bg-offwhiteCard border border-offwhiteBorder rounded-3xl p-6 shadow-soft space-y-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <h3 className="text-base font-bold text-bark-800">Live Yard Stock Inventory</h3>
+                      <p className="text-xs text-stone-500">Real-time balances for raw seeds and extracted oil tanks</p>
+                    </div>
+                    
+                    <select 
+                      value={selectedSeedFilter}
+                      onChange={(e) => setSelectedSeedFilter(e.target.value)}
+                      className="text-xs font-semibold bg-offwhite border border-offwhiteBorder px-3 py-1.5 rounded-xl text-bark-800 focus:outline-none"
+                    >
+                      <option value="all">View All 7 Oilseeds Combined</option>
+                      {OIL_SEEDS_LIST.map(s => (
+                        <option key={s.id} value={s.name}>{s.icon} {s.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="bg-offwhite p-5 rounded-2xl border border-offwhiteBorder space-y-3">
+                      <div className="flex justify-between items-center text-xs font-bold text-stone-500">
+                        <span>RAW SEED STOCK</span>
+                        <span className="text-sage-700">🌱 {selectedSeedFilter === 'all' ? 'All Seeds' : selectedSeedFilter}</span>
+                      </div>
+                      <div className="text-xl font-bold text-bark-800">
+                        {selectedSeedFilter === 'all' 
+                          ? (inventory.totalSeedKg / 1000).toFixed(2) 
+                          : ((inventory.seedBreakdown[selectedSeedFilter]?.seedKg || 0) / 1000).toFixed(2)
+                        } <span className="text-sm font-medium text-stone-500">Metric Tons</span>
+                      </div>
+                      <div className="w-full bg-stone-200 h-2 rounded-full overflow-hidden">
+                        <div className="bg-sage-500 h-full rounded-full" style={{ width: `${Math.min(100, (inventory.totalSeedKg / 70000) * 100)}%` }}></div>
+                      </div>
+                      <div className="text-[11px] text-stone-400 flex justify-between">
+                        <span>Total Yard Stock</span>
+                        <span>Active Storage</span>
+                      </div>
+                    </div>
+
+                    <div className="bg-offwhite p-5 rounded-2xl border border-offwhiteBorder space-y-3">
+                      <div className="flex justify-between items-center text-xs font-bold text-stone-500">
+                        <span>EXTRACTED OIL TANKS</span>
+                        <span className="text-amber-700">🛢️ {selectedSeedFilter === 'all' ? 'Combined Oil' : selectedSeedFilter + ' Oil'}</span>
+                      </div>
+                      <div className="text-xl font-bold text-bark-800">
+                        {selectedSeedFilter === 'all'
+                          ? inventory.totalOilLitres.toLocaleString()
+                          : (inventory.seedBreakdown[selectedSeedFilter]?.oilLitres || 0).toLocaleString()
+                        } <span className="text-sm font-medium text-stone-500">Litres</span>
+                      </div>
+                      <div className="w-full bg-stone-200 h-2 rounded-full overflow-hidden">
+                        <div className="bg-amber-500 h-full rounded-full" style={{ width: `${Math.min(100, (inventory.totalOilLitres / 35000) * 100)}%` }}></div>
+                      </div>
+                      <div className="text-[11px] text-stone-400 flex justify-between">
+                        <span>Tanker Capacity: 35,000 L</span>
+                        <span>{((inventory.totalOilLitres / 35000) * 100).toFixed(0)}% full</span>
+                      </div>
+                    </div>
+
+                    <div className="bg-offwhite p-5 rounded-2xl border border-offwhiteBorder space-y-3">
+                      <div className="flex justify-between items-center text-xs font-bold text-stone-500">
+                        <span>DE-OILED CAKE STOCK</span>
+                        <span className="text-stone-700">📦 Cake By-Product</span>
+                      </div>
+                      <div className="text-xl font-bold text-bark-800">
+                        {selectedSeedFilter === 'all'
+                          ? (inventory.totalCakeKg / 1000).toFixed(2)
+                          : ((inventory.seedBreakdown[selectedSeedFilter]?.cakeKg || 0) / 1000).toFixed(2)
+                        } <span className="text-sm font-medium text-stone-500">Metric Tons</span>
+                      </div>
+                      <div className="w-full bg-stone-200 h-2 rounded-full overflow-hidden">
+                        <div className="bg-stone-500 h-full rounded-full" style={{ width: `${Math.min(100, (inventory.totalCakeKg / 50000) * 100)}%` }}></div>
+                      </div>
+                      <div className="text-[11px] text-stone-400 flex justify-between">
+                        <span>Shed Capacity: 50 Tons</span>
+                        <span>{((inventory.totalCakeKg / 50000) * 100).toFixed(0)}% full</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-offwhiteCard border border-offwhiteBorder rounded-3xl p-6 shadow-soft space-y-6">
+                  
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-offwhiteBorder pb-4">
+                    <div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs uppercase font-extrabold text-sage-600 tracking-wider">Visual Operational Analytics</span>
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">Interactive Graphs</span>
+                      </div>
+                      <h3 className="text-base font-bold text-bark-800 mt-0.5">Production, Yield & Financial Trends</h3>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      <div className="bg-offwhite p-1 rounded-2xl border border-offwhiteBorder flex items-center space-x-1">
+                        <button
+                          onClick={() => setGraphViewMode('daily')}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${graphViewMode === 'daily' ? 'bg-white text-sage-800 shadow-soft' : 'text-stone-500 hover:text-stone-800'}`}
+                        >
+                          📅 Daily Breakdown
+                        </button>
+                        <button
+                          onClick={() => setGraphViewMode('monthly')}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${graphViewMode === 'monthly' ? 'bg-white text-sage-800 shadow-soft' : 'text-stone-500 hover:text-stone-800'}`}
+                        >
+                          📊 Monthly Trends
+                        </button>
+                        <button
+                          onClick={() => setGraphViewMode('seeds')}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${graphViewMode === 'seeds' ? 'bg-white text-sage-800 shadow-soft' : 'text-stone-500 hover:text-stone-800'}`}
+                        >
+                          🌱 Seed Variety Share
+                        </button>
+                      </div>
+
+                      {graphViewMode === 'daily' && (
+                        <input 
+                          type="month" 
+                          value={selectedMonth} 
+                          onChange={(e) => setSelectedMonth(e.target.value)}
+                          className="bg-offwhite border border-offwhiteBorder rounded-xl text-xs font-bold px-3 py-1.5 text-bark-800 focus:outline-none"
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  {graphViewMode === 'daily' && (
+                    <div className="space-y-4">
+                      <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <div className="flex items-center space-x-4">
+                          <span className="flex items-center space-x-1 font-semibold text-stone-600">
+                            <span className="w-3 h-3 rounded-md bg-sage-500 inline-block"></span>
+                            <span>Seed Crushed (Kg)</span>
+                          </span>
+                          <span className="flex items-center space-x-1 font-semibold text-stone-600">
+                            <span className="w-3 h-3 rounded-md bg-amber-500 inline-block"></span>
+                            <span>Oil Extracted (L)</span>
+                          </span>
+                          <span className="flex items-center space-x-1 font-semibold text-stone-600">
+                            <span className="w-3 h-3 rounded-md bg-blue-500 inline-block"></span>
+                            <span>Orders (₹)</span>
+                          </span>
+                        </div>
+                        <span className="text-[11px] text-stone-400 font-medium">Hover on any bar column to inspect exact figures</span>
+                      </div>
+
+                      <div className="bg-offwhite p-4 rounded-2xl border border-offwhiteBorder overflow-x-auto">
+                        <div className="min-w-[650px] h-64 flex items-end justify-between gap-1 pt-6 pb-2 px-2 relative">
+                          
+                          <div className="absolute inset-x-0 top-6 border-b border-stone-200 border-dashed"></div>
+                          <div className="absolute inset-x-0 top-1/2 border-b border-stone-200 border-dashed"></div>
+
+                          {dailyGraphData.map((d, idx) => {
+                            const maxSeed = 10000;
+                            const seedHeight = Math.min(100, (d.seedCrushedKg / maxSeed) * 100);
+                            const oilHeight = Math.min(100, (d.oilProducedLitres / 4000) * 100);
+                            const orderHeight = Math.min(100, (d.ordersAmount / 250000) * 100);
+                            const isHovered = activeHoverBar === `daily-${idx}`;
+
+                            return (
+                              <div 
+                                key={d.date}
+                                onMouseEnter={() => setActiveHoverBar(`daily-${idx}`)}
+                                onMouseLeave={() => setActiveHoverBar(null)}
+                                className="flex-1 flex flex-col items-center justify-end h-full relative group cursor-pointer"
+                              >
+                                {isHovered && (
+                                  <div className="absolute bottom-full mb-2 bg-bark-800 text-white p-2.5 rounded-xl shadow-soft-lg text-[10px] z-20 whitespace-nowrap space-y-1 pointer-events-none">
+                                    <div className="font-bold border-b border-stone-600 pb-1 text-sage-300">
+                                      {d.date} (Day {d.dayLabel})
+                                    </div>
+                                    <div>🌱 Seed Crushed: <b>{d.seedCrushedKg.toLocaleString()} Kg</b></div>
+                                    <div>🛢️ Oil Extracted: <b>{d.oilProducedLitres.toLocaleString()} L</b></div>
+                                    <div>📦 Cake Output: <b>{d.cakeProducedKg.toLocaleString()} Kg</b></div>
+                                    <div>🛒 Orders: <b>₹{d.ordersAmount.toLocaleString()}</b></div>
+                                    <div>💳 Payments: <b>₹{d.paymentsAmount.toLocaleString()}</b></div>
+                                  </div>
+                                )}
+
+                                <div className="w-full flex items-end justify-center space-x-0.5 h-48">
+                                  <div 
+                                    className={`w-2.5 rounded-t-md transition-all duration-300 ${seedHeight > 0 ? 'bg-sage-500 group-hover:bg-sage-600' : 'bg-stone-200/50'}`} 
+                                    style={{ height: `${Math.max(4, seedHeight)}%` }} 
+                                  />
+                                  <div 
+                                    className={`w-2.5 rounded-t-md transition-all duration-300 ${oilHeight > 0 ? 'bg-amber-500 group-hover:bg-amber-600' : 'bg-stone-200/50'}`} 
+                                    style={{ height: `${Math.max(4, oilHeight)}%` }} 
+                                  />
+                                  <div 
+                                    className={`w-1.5 rounded-t-md transition-all duration-300 ${orderHeight > 0 ? 'bg-blue-500 group-hover:bg-blue-600' : 'bg-stone-200/50'}`} 
+                                    style={{ height: `${Math.max(2, orderHeight)}%` }} 
+                                  />
+                                </div>
+
+                                <span className={`text-[10px] mt-2 font-bold ${d.seedCrushedKg > 0 ? 'text-bark-800' : 'text-stone-400'}`}>
+                                  {d.dayLabel}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {graphViewMode === 'monthly' && (
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-6 text-xs font-semibold text-stone-600">
+                        <span className="flex items-center space-x-1.5">
+                          <span className="w-3.5 h-3.5 rounded-md bg-sage-600 inline-block"></span>
+                          <span>Monthly Crushing (Tons)</span>
+                        </span>
+                        <span className="flex items-center space-x-1.5">
+                          <span className="w-3.5 h-3.5 rounded-md bg-emerald-500 inline-block"></span>
+                          <span>Payments Collected (₹)</span>
+                        </span>
+                        <span className="flex items-center space-x-1.5">
+                          <span className="w-3.5 h-3.5 rounded-md bg-blue-500 inline-block"></span>
+                          <span>Orders Received (₹)</span>
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-3">
+                        {monthlyGraphData.map((m) => (
+                          <div key={m.key} className="p-4 rounded-2xl bg-offwhite border border-offwhiteBorder space-y-3">
+                            <div className="text-xs font-bold text-bark-800 border-b border-stone-200 pb-1 flex justify-between">
+                              <span>{m.label}</span>
+                              <span className="text-sage-700 font-extrabold">{m.seedCrushedTons} T</span>
+                            </div>
+
+                            <div className="space-y-2 text-[11px]">
+                              <div>
+                                <div className="text-stone-400 text-[10px] flex justify-between">
+                                  <span>Oil Output</span>
+                                  <span className="font-bold text-amber-700">{m.oilProducedLitres.toLocaleString()} L</span>
+                                </div>
+                                <div className="w-full bg-stone-200 h-1.5 rounded-full mt-0.5 overflow-hidden">
+                                  <div className="bg-amber-500 h-full rounded-full" style={{ width: `${Math.min(100, (m.oilProducedLitres / 8000) * 100)}%` }}></div>
+                                </div>
+                              </div>
+
+                              <div>
+                                <div className="text-stone-400 text-[10px] flex justify-between">
+                                  <span>Orders</span>
+                                  <span className="font-bold text-blue-700">₹{(m.ordersAmount / 1000).toFixed(0)}k</span>
+                                </div>
+                                <div className="w-full bg-stone-200 h-1.5 rounded-full mt-0.5 overflow-hidden">
+                                  <div className="bg-blue-500 h-full rounded-full" style={{ width: `${Math.min(100, (m.ordersAmount / 500000) * 100)}%` }}></div>
+                                </div>
+                              </div>
+
+                              <div>
+                                <div className="text-stone-400 text-[10px] flex justify-between">
+                                  <span>Payments</span>
+                                  <span className="font-bold text-emerald-700">₹{(m.paymentsAmount / 1000).toFixed(0)}k</span>
+                                </div>
+                                <div className="w-full bg-stone-200 h-1.5 rounded-full mt-0.5 overflow-hidden">
+                                  <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${Math.min(100, (m.paymentsAmount / 500000) * 100)}%` }}></div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {graphViewMode === 'seeds' && (
+                    <div className="space-y-4">
+                      <p className="text-xs text-stone-500">Distribution of raw seed crushing across all 7 oilseeds processed at Shri Jagdamba Industry</p>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {seedDistributionData.map((s) => {
+                          const totalCrushedAll = seedDistributionData.reduce((acc, curr) => acc + curr.seedCrushedKg, 0) || 1;
+                          const pct = ((s.seedCrushedKg / totalCrushedAll) * 100).toFixed(1);
+
+                          return (
+                            <div key={s.name} className="p-4 rounded-2xl bg-offwhite border border-offwhiteBorder flex items-center justify-between gap-4">
+                              <div className="flex items-center space-x-3">
+                                <div className="text-2xl p-2 bg-white rounded-xl border border-stone-200">{s.icon}</div>
+                                <div>
+                                  <h4 className="text-xs font-bold text-bark-800">{s.name}</h4>
+                                  <p className="text-[11px] text-stone-500 mt-0.5">
+                                    Crushed: <b>{s.seedCrushedKg.toLocaleString()} Kg</b> • Oil: <b>{s.oilProducedLitres.toLocaleString()} L</b>
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="text-right min-w-[70px]">
+                                <span className="text-sm font-extrabold text-sage-800">{pct}%</span>
+                                <div className="w-16 bg-stone-200 h-2 rounded-full overflow-hidden mt-1">
+                                  <div className="bg-sage-600 h-full rounded-full" style={{ width: `${pct}%` }}></div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+
+                <div className="bg-offwhiteCard border border-offwhiteBorder rounded-3xl p-6 shadow-soft space-y-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-offwhiteBorder pb-4">
+                    <div>
+                      <h3 className="text-base font-bold text-bark-800">Monthly Performance Totals</h3>
+                      <p className="text-xs text-stone-500">Consolidated monthly statistics for management review</p>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <label className="text-xs font-semibold text-stone-500">Select Month:</label>
+                      <input 
+                        type="month" 
+                        value={selectedMonth} 
+                        onChange={(e) => setSelectedMonth(e.target.value)}
+                        className="bg-offwhite border border-offwhiteBorder rounded-xl text-xs font-bold px-3 py-1.5 text-bark-800 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="p-4 rounded-2xl bg-sage-50/50 border border-sage-100 space-y-1">
+                      <span className="text-[11px] font-bold text-sage-700 uppercase tracking-wider">Total Seeds Added</span>
+                      <div className="text-lg font-bold text-bark-800">{(monthlyMetrics.seedAdded / 1000).toFixed(2)} <span className="text-xs font-normal text-stone-500">Tons</span></div>
+                      <p className="text-[10px] text-stone-400">Raw seed stock received</p>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-100 space-y-1">
+                      <span className="text-[11px] font-bold text-amber-700 uppercase tracking-wider">Seed Crushed</span>
+                      <div className="text-lg font-bold text-bark-800">{(monthlyMetrics.seedCrushed / 1000).toFixed(2)} <span className="text-xs font-normal text-stone-500">Tons</span></div>
+                      <p className="text-[10px] text-stone-400">Total crushed in mill</p>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 space-y-1">
+                      <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">Oil Extracted</span>
+                      <div className="text-lg font-bold text-bark-800">{monthlyMetrics.oilProduced.toLocaleString()} <span className="text-xs font-normal text-stone-500">Litres</span></div>
+                      <p className="text-[10px] text-stone-400">Avg recovery yield: {monthlyMetrics.extractionRate}%</p>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-blue-50/50 border border-blue-100 space-y-1">
+                      <span className="text-[11px] font-bold text-blue-700 uppercase tracking-wider">Payments Collected</span>
+                      <div className="text-lg font-bold text-bark-800">₹{monthlyMetrics.paymentsCollected.toLocaleString()}</div>
+                      <p className="text-[10px] text-stone-400">Orders placed: ₹{monthlyMetrics.ordersValue.toLocaleString()}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-offwhiteCard border border-offwhiteBorder rounded-3xl p-6 shadow-soft space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-base font-bold text-bark-800">Recent Operational Entries</h3>
+                    <button 
+                      onClick={() => setActiveTab('logs')} 
+                      className="text-xs text-sage-600 hover:text-sage-700 font-bold flex items-center space-x-1"
+                    >
+                      <span>View All Records ({logs.length})</span>
+                      <span>→</span>
+                    </button>
+                  </div>
+
+                  <div className="space-y-3">
+                    {logs.slice(0, 4).map((log) => (
+                      <div 
+                        key={log.id} 
+                        className={`p-4 rounded-2xl border transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${log.id === newlyAddedId ? 'animate-entry-fade border-sage-400' : 'bg-offwhite border-offwhiteBorder'}`}
+                      >
+                        <div className="flex items-center space-x-3">
+                          <div className="p-2.5 rounded-xl bg-white border border-stone-200 text-stone-700">
+                            {log.category === 'seed_add' && '🌾'}
+                            {log.category === 'crushing' && '⚙️'}
+                            {log.category === 'order' && '🛒'}
+                            {log.category === 'delivery' && '🚚'}
+                            {log.category === 'payment' && '💳'}
+                          </div>
+                          <div>
+                            <div className="flex items-center space-x-2">
+                              <span className="text-xs font-bold text-bark-800">{log.type}</span>
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-stone-200 text-stone-600 font-semibold">{log.date} at {log.time}</span>
+                            </div>
+                            <p className="text-xs text-stone-600 mt-0.5">
+                              {log.seedType && `Seed: ${log.seedType} • `}
+                              {log.seedQtyKg && `Seed: ${log.seedQtyKg.toLocaleString()} Kg • `}
+                              {log.oilProducedLitres && `Oil Output: ${log.oilProducedLitres.toLocaleString()} L • `}
+                              {log.customerName && `Customer: ${log.customerName} • `}
+                              {log.product && `Product: ${log.product}`}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="text-right sm:self-center">
+                          {log.amount && (
+                            <span className="text-sm font-bold text-sage-700">₹{log.amount.toLocaleString()}</span>
+                          )}
+                          <span className="block text-[10px] text-stone-400">By {log.operator}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+            )}
+
+            {activeTab === 'logs' && (
+              <div className="space-y-6 animate-entry-fade">
+                <div className="bg-offwhiteCard border border-offwhiteBorder rounded-3xl p-6 shadow-soft space-y-6">
+                  
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                      <h3 className="text-base font-bold text-bark-800">All Daily Operational Records</h3>
+                      <p className="text-xs text-stone-500">Filter, inspect, and verify all daily mill logs</p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      <select 
+                        value={filterCategory} 
+                        onChange={(e) => setFilterCategory(e.target.value)}
+                        className="text-xs font-semibold bg-offwhite border border-offwhiteBorder px-3 py-2 rounded-xl text-stone-700 focus:outline-none"
+                      >
+                        <option value="all">All Categories</option>
+                        <option value="seed_add">Seed Additions</option>
+                        <option value="crushing">Daily Crushing</option>
+                        <option value="order">Orders Received</option>
+                        <option value="delivery">Orders Delivered</option>
+                        <option value="payment">Payments Received</option>
+                      </select>
+
+                      <input 
+                        type="text" 
+                        placeholder="Search logs..." 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="text-xs bg-offwhite border border-offwhiteBorder px-3 py-2 rounded-xl text-stone-800 focus:outline-none w-48"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="overflow-x-auto rounded-2xl border border-offwhiteBorder">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-offwhite border-b border-offwhiteBorder text-stone-500 uppercase text-[10px] font-bold">
+                        <tr>
+                          <th className="py-3 px-4">Date / Time</th>
+                          <th className="py-3 px-4">Entry Type</th>
+                          <th className="py-3 px-4">Details / Description</th>
+                          <th className="py-3 px-4">Yield / Quantity</th>
+                          <th className="py-3 px-4">Amount (₹)</th>
+                          <th className="py-3 px-4">Logged By</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-offwhiteBorder bg-white">
+                        {filteredLogs.length === 0 ? (
+                          <tr>
+                            <td colSpan="6" className="py-8 text-center text-stone-400">
+                              No operational records found matching search filters.
+                            </td>
+                          </tr>
+                        ) : (
+                          filteredLogs.map((log) => (
+                            <tr key={log.id} className={`hover:bg-sage-50/30 transition-colors ${log.id === newlyAddedId ? 'animate-entry-fade bg-sage-50/50' : ''}`}>
+                              <td className="py-3 px-4 whitespace-nowrap">
+                                <div className="font-semibold text-bark-800">{log.date}</div>
+                                <div className="text-[10px] text-stone-400">{log.time}</div>
+                              </td>
+                              <td className="py-3 px-4 whitespace-nowrap">
+                                <span className={`inline-block px-2.5 py-1 rounded-xl text-[10px] font-bold ${
+                                  log.category === 'seed_add' ? 'bg-sage-100 text-sage-800' :
+                                  log.category === 'crushing' ? 'bg-amber-100 text-amber-800' :
+                                  log.category === 'order' ? 'bg-blue-100 text-blue-800' :
+                                  log.category === 'delivery' ? 'bg-purple-100 text-purple-800' :
+                                  'bg-emerald-100 text-emerald-800'
+                                }`}>
+                                  {log.type}
+                                </span>
+                              </td>
+                              <td className="py-3 px-4">
+                                {log.seedType && <div className="font-semibold text-bark-800">{log.seedType}</div>}
+                                {log.customerName && <div className="font-semibold text-bark-800">{log.customerName}</div>}
+                                {log.supplier && <div className="text-[11px] text-stone-500">Supplier: {log.supplier}</div>}
+                                {log.product && <div className="text-[11px] text-stone-500">{log.product}</div>}
+                                {log.notes && <div className="text-[10px] text-stone-400 italic">{log.notes}</div>}
+                              </td>
+                              <td className="py-3 px-4 whitespace-nowrap">
+                                {log.seedQtyKg && <div>Seed: <b>{log.seedQtyKg.toLocaleString()} Kg</b></div>}
+                                {log.oilProducedLitres && <div>Oil: <b>{log.oilProducedLitres.toLocaleString()} L</b></div>}
+                                {log.cakeProducedKg && <div>Cake: <b>{log.cakeProducedKg.toLocaleString()} Kg</b></div>}
+                                {log.qty && <div>Qty: <b>{log.qty}</b></div>}
+                              </td>
+                              <td className="py-3 px-4 whitespace-nowrap font-bold text-stone-800">
+                                {log.amount ? `₹${log.amount.toLocaleString()}` : '—'}
+                              </td>
+                              <td className="py-3 px-4 whitespace-nowrap text-stone-500 text-[11px]">
+                                {log.operator}
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'customers' && (
+              <div className="space-y-6 animate-entry-fade">
+                <div className="bg-offwhiteCard border border-offwhiteBorder rounded-3xl p-6 shadow-soft space-y-6">
+                  
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-offwhiteBorder pb-4">
+                    <div>
+                      <h3 className="text-base font-bold text-bark-800">Client & Buyer Directory</h3>
+                      <p className="text-xs text-stone-500">Manage customer contacts, outstanding balances, and credit limits</p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      <div className="relative">
+                        <input 
+                          type="text" 
+                          placeholder="Search buyers..." 
+                          value={customerSearch}
+                          onChange={(e) => setCustomerSearch(e.target.value)}
+                          className="text-xs bg-offwhite border border-offwhiteBorder px-3 py-2 pl-8 rounded-xl text-stone-800 focus:outline-none w-48"
+                        />
+                        <span className="absolute left-2.5 top-2.5 text-stone-400">
+                          <Icons.Search />
+                        </span>
+                      </div>
+
+                      <button
+                        onClick={() => setActiveModal('add_customer')}
+                        className="bg-sage-600 hover:bg-sage-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm flex items-center space-x-1.5"
+                      >
+                        <Icons.Plus />
+                        <span>Add New Customer</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {filteredCustomers.length === 0 ? (
+                      <div className="col-span-2 py-12 text-center text-stone-400 text-xs">
+                        No customer buyers found matching search term.
+                      </div>
+                    ) : (
+                      filteredCustomers.map((c) => (
+                        <div key={c.id} className="p-5 rounded-2xl bg-offwhite border border-offwhiteBorder space-y-3 relative group">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider">{c.id}</span>
+                              <h4 className="text-sm font-bold text-bark-800">{c.name}</h4>
+                              <p className="text-xs text-stone-500">{c.contact} • {c.phone}</p>
+                            </div>
+                            <span className={`px-2.5 py-1 rounded-xl text-[10px] font-bold ${c.balance > 0 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}`}>
+                              {c.balance > 0 ? `Outstanding: ₹${c.balance.toLocaleString()}` : 'Clear Balance'}
+                            </span>
+                          </div>
+
+                          <div className="text-xs text-stone-600 space-y-1 pt-2 border-t border-stone-200">
+                            <div>📍 <b>Address:</b> {c.address}</div>
+                            <div>📧 <b>Email:</b> {c.email}</div>
+                            <div>💳 <b>Credit Limit:</b> ₹{c.creditLimit.toLocaleString()} | 📦 <b>Total Orders:</b> {c.totalOrders}</div>
+                          </div>
+
+                          <div className="pt-2 flex items-center justify-end space-x-2">
+                            <button
+                              onClick={() => {
+                                setPrefilledCustomer(c.name);
+                                setActiveModal('new_order');
+                              }}
+                              className="px-3 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-[11px] font-bold transition-colors"
+                            >
+                              + Create Order
+                            </button>
+                            <button
+                              onClick={() => {
+                                setPrefilledCustomer(c.name);
+                                setActiveModal('log_payment');
+                              }}
+                              className="px-3 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-bold transition-colors"
+                            >
+                              + Log Payment
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                </div>
+              </div>
+            )}
+
+          </main>
+
+          {activeModal && (
+            <div 
+              className="fixed inset-0 z-50 bg-bark-800/40 backdrop-blur-sm flex items-center justify-center p-4 cursor-pointer"
+              onClick={(e) => { if (e.target === e.currentTarget) setActiveModal(null); }}
+            >
+              <div className="bg-white border border-offwhiteBorder w-full max-w-md rounded-3xl shadow-soft-lg p-6 space-y-4 animate-entry-fade cursor-default">
+                
+                <div className="flex justify-between items-center border-b border-offwhiteBorder pb-3">
+                  <h3 className="text-sm font-bold text-bark-800 uppercase tracking-wide">
+                    {activeModal === 'add_seed' && '🌾 Log Seed Stock Addition'}
+                    {activeModal === 'log_crushing' && '⚙️ Record Daily Crushing & Output'}
+                    {activeModal === 'new_order' && '🛒 Log Customer Order'}
+                    {activeModal === 'log_payment' && '💳 Record Payment Collection'}
+                    {activeModal === 'add_customer' && '👤 Add Customer To Database'}
+                  </h3>
+                  <button 
+                    onClick={() => setActiveModal(null)} 
+                    className="text-stone-400 hover:text-stone-700 bg-stone-100 hover:bg-stone-200 w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs transition-colors"
+                    title="Close window"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {activeModal === 'add_seed' && (
+                  <form onSubmit={handleAddSeed} className="space-y-4 text-xs">
+                    <div>
+                      <label className="block font-semibold text-stone-600 mb-1">Date</label>
+                      <input type="date" name="date" defaultValue={new Date().toISOString().split('T')[0]} required className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                    </div>
+                    <div>
+                      <label className="block font-semibold text-stone-600 mb-1">Seed Variety</label>
+                      <select name="seedType" className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300">
+                        {OIL_SEEDS_LIST.map(s => (
+                          <option key={s.id} value={s.name}>{s.icon} {s.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block font-semibold text-stone-600 mb-1">Supplier / Farm Co-op Name</label>
+                      <input type="text" name="supplier" placeholder="e.g. Vidarbha Agri Farmers Co-op" required className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-semibold text-stone-600 mb-1">Quantity (in Kg)</label>
+                        <input type="number" name="seedQtyKg" placeholder="10000" required className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                      </div>
+                      <div>
+                        <label className="block font-semibold text-stone-600 mb-1">Cost Per Ton (₹)</label>
+                        <input type="number" name="costPerTon" placeholder="58000" className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block font-semibold text-stone-600 mb-1">Logged By Operator</label>
+                      <input type="text" name="operator" defaultValue="Yard Supervisor" className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                    </div>
+                    <div className="flex items-center space-x-3 pt-2">
+                      <button 
+                        type="button" 
+                        onClick={() => setActiveModal(null)} 
+                        className="w-1/2 py-3 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl font-bold transition-all"
+                      >
+                        Cancel
+                      </button>
+                      <button 
+                        type="submit" 
+                        className="w-1/2 py-3 bg-sage-600 hover:bg-sage-700 text-white rounded-xl font-bold shadow-sm transition-all"
+                      >
+                        Save Seed Stock
+                      </button>
+                    </div>
+                  </form>
+                )}
+
+                {activeModal === 'log_crushing' && (
+                  <form onSubmit={handleLogCrushing} className="space-y-4 text-xs">
+                    <div>
+                      <label className="block font-semibold text-stone-600 mb-1">Crushing Date</label>
+                      <input type="date" name="date" defaultValue={new Date().toISOString().split('T')[0]} required className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                    </div>
+                    <div>
+                      <label className="block font-semibold text-stone-600 mb-1">Seed Variety Crushed</label>
+                      <select name="seedType" className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300">
+                        {OIL_SEEDS_LIST.map(s => (
+                          <option key={s.id} value={s.name}>{s.icon} {s.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block font-semibold text-stone-600 mb-1">Seed Quantity Crushed (Kg)</label>
+                      <input type="number" name="seedQtyKg" placeholder="5000" required className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-semibold text-stone-600 mb-1">Oil Produced (Litres)</label>
+                        <input type="number" name="oilProducedLitres" placeholder="2000" required className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                      </div>
+                      <div>
+                        <label className="block font-semibold text-stone-600 mb-1">Cake Produced (Kg)</label>
+                        <input type="number" name="cakeProducedKg" placeholder="2900" required className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block font-semibold text-stone-600 mb-1">Shift / Mill Operator</label>
+                      <input type="text" name="operator" defaultValue="Suresh (Shift A)" className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                    </div>
+                    <div>
+                      <label className="block font-semibold text-stone-600 mb-1">Shift Notes</label>
+                      <input type="text" name="notes" placeholder="e.g. Normal yield extraction run" className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                    </div>
+                    <div className="flex items-center space-x-3 pt-2">
+                      <button 
+                        type="button" 
+                        onClick={() => setActiveModal(null)} 
+                        className="w-1/2 py-3 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl font-bold transition-all"
+                      >
+                        Cancel
+                      </button>
+                      <button 
+                        type="submit" 
+                        className="w-1/2 py-3 bg-sage-600 hover:bg-sage-700 text-white rounded-xl font-bold shadow-sm transition-all"
+                      >
+                        Record Output
+                      </button>
+                    </div>
+                  </form>
+                )}
+
+                {activeModal === 'new_order' && (
+                  <form onSubmit={handleNewOrder} className="space-y-4 text-xs">
+                    <div>
+                      <label className="block font-semibold text-stone-600 mb-1">Order Date</label>
+                      <input type="date" name="date" defaultValue={new Date().toISOString().split('T')[0]} required className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                    </div>
+                    <div>
+                      <label className="block font-semibold text-stone-600 mb-1">Select Customer</label>
+                      <select name="customerName" defaultValue={prefilledCustomer || customers[0]?.name} className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300">
+                        {customers.map(c => (
+                          <option key={c.id} value={c.name}>{c.name} ({c.contact})</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block font-semibold text-stone-600 mb-1">Product Description</label>
+                      <select name="product" className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300">
+                        <option value="Filtered Groundnut Oil (15L Tin)">Filtered Groundnut Oil (15L Tin)</option>
+                        <option value="Sunflower Oil (15L Tin)">Sunflower Oil (15L Tin)</option>
+                        <option value="Safflower Oil / Kardai Oil (15L Tin)">Safflower Oil / Kardai Oil (15L Tin)</option>
+                        <option value="Cold Pressed Sesame Oil (15L Tin)">Cold Pressed Sesame Oil (15L Tin)</option>
+                        <option value="Mustard Oil (15L Tin)">Mustard Oil (15L Tin)</option>
+                        <option value="Pure Coconut Oil (15L Tin)">Pure Coconut Oil (15L Tin)</option>
+                        <option value="Flaxseed Oil / Jawas Oil (15L Tin)">Flaxseed Oil / Jawas Oil (15L Tin)</option>
+                        <option value="De-oiled Oilseed Cake (50Kg Bag)">De-oiled Oilseed Cake (50Kg Bag)</option>
+                      </select>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-semibold text-stone-600 mb-1">Quantity/Units</label>
+                        <input type="text" name="qty" placeholder="50 Tins / 2 Tons" required className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                      </div>
+                      <div>
+                        <label className="block font-semibold text-stone-600 mb-1">Total Amount (₹)</label>
+                        <input type="number" name="amount" placeholder="95000" required className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block font-semibold text-stone-600 mb-1">Sales Rep Name</label>
+                      <input type="text" name="operator" defaultValue="Sales Desk" className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                    </div>
+                    <div className="flex items-center space-x-3 pt-2">
+                      <button 
+                        type="button" 
+                        onClick={() => setActiveModal(null)} 
+                        className="w-1/2 py-3 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl font-bold transition-all"
+                      >
+                        Cancel
+                      </button>
+                      <button 
+                        type="submit" 
+                        className="w-1/2 py-3 bg-sage-600 hover:bg-sage-700 text-white rounded-xl font-bold shadow-sm transition-all"
+                      >
+                        Log Order Entry
+                      </button>
+                    </div>
+                  </form>
+                )}
+
+                {activeModal === 'log_payment' && (
+                  <form onSubmit={handleLogPayment} className="space-y-4 text-xs">
+                    <div>
+                      <label className="block font-semibold text-stone-600 mb-1">Payment Date</label>
+                      <input type="date" name="date" defaultValue={new Date().toISOString().split('T')[0]} required className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                    </div>
+                    <div>
+                      <label className="block font-semibold text-stone-600 mb-1">Select Customer</label>
+                      <select name="customerName" defaultValue={prefilledCustomer || customers[0]?.name} className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300">
+                        {customers.map(c => (
+                          <option key={c.id} value={c.name}>{c.name} (Bal: ₹{c.balance.toLocaleString()})</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block font-semibold text-stone-600 mb-1">Amount Received (₹)</label>
+                      <input type="number" name="amount" placeholder="50000" required className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                    </div>
+                    <div>
+                      <label className="block font-semibold text-stone-600 mb-1">Payment Mode</label>
+                      <select name="mode" className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300">
+                        <option value="Bank Transfer (NEFT/RTGS)">Bank Transfer (NEFT/RTGS)</option>
+                        <option value="UPI / QR Payment">UPI / QR Payment</option>
+                        <option value="Cheque Deposit">Cheque Deposit</option>
+                        <option value="Cash">Cash Receipt</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block font-semibold text-stone-600 mb-1">Bank Reference No. / UTR</label>
+                      <input type="text" name="refNo" placeholder="UTIBR2026..." className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                    </div>
+                    <div className="flex items-center space-x-3 pt-2">
+                      <button 
+                        type="button" 
+                        onClick={() => setActiveModal(null)} 
+                        className="w-1/2 py-3 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl font-bold transition-all"
+                      >
+                        Cancel
+                      </button>
+                      <button 
+                        type="submit" 
+                        className="w-1/2 py-3 bg-sage-600 hover:bg-sage-700 text-white rounded-xl font-bold shadow-sm transition-all"
+                      >
+                        Record Payment
+                      </button>
+                    </div>
+                  </form>
+                )}
+
+                {activeModal === 'add_customer' && (
+                  <form onSubmit={handleAddCustomer} className="space-y-4 text-xs">
+                    <div>
+                      <label className="block font-semibold text-stone-600 mb-1">Company / Customer Name</label>
+                      <input type="text" name="name" placeholder="Apex Supermarket Ltd" required className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-semibold text-stone-600 mb-1">Contact Person</label>
+                        <input type="text" name="contact" placeholder="Rahul Varma" required className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                      </div>
+                      <div>
+                        <label className="block font-semibold text-stone-600 mb-1">Phone Number</label>
+                        <input type="text" name="phone" placeholder="+91 98220..." required className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block font-semibold text-stone-600 mb-1">Email Address</label>
+                      <input type="email" name="email" placeholder="contact@company.com" className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                    </div>
+                    <div>
+                      <label className="block font-semibold text-stone-600 mb-1">Address / Location</label>
+                      <input type="text" name="address" placeholder="Industrial Area, City" required className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-semibold text-stone-600 mb-1">Opening Balance (₹)</label>
+                        <input type="number" name="openingBalance" defaultValue="0" className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                      </div>
+                      <div>
+                        <label className="block font-semibold text-stone-600 mb-1">Approved Credit Limit (₹)</label>
+                        <input type="number" name="creditLimit" defaultValue="100000" className="w-full p-2.5 bg-offwhite border border-offwhiteBorder rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-300" />
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3 pt-2">
+                      <button 
+                        type="button" 
+                        onClick={() => setActiveModal(null)} 
+                        className="w-1/2 py-3 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl font-bold transition-all"
+                      >
+                        Cancel
+                      </button>
+                      <button 
+                        type="submit" 
+                        className="w-1/2 py-3 bg-sage-600 hover:bg-sage-700 text-white rounded-xl font-bold shadow-sm transition-all"
+                      >
+                        Add Customer
+                      </button>
+                    </div>
+                  </form>
+                )}
+
+              </div>
+            </div>
+          )}
+
+          <footer className="mt-auto py-6 border-t border-offwhiteBorder text-center text-xs text-stone-400">
+            <p>SHRI JAGDAMBA IND Daily Operations Monitor • Designed for Edible Oil Extraction & Processing Units</p>
+          </footer>
+
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
