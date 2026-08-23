@@ -5,23 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SHRI JAGDAMBA IND - Edible Oil Mill Daily Operations Monitor</title>
   
-  <!-- Progressive Web App (PWA) Manifest & Meta Tags -->
+ <!-- MUST HAVE: Link to Manifest -->
+  <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#4F6C47" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="application-name" content="Shri Jagdamba" />
   <link rel="icon" sizes="192x192" href="https://img.icons8.com/color/192/factory.png" />
+
   <!-- Service Worker Registration -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(reg => console.log('SW registered successfully:', reg.scope))
-          .catch(err => console.log('SW registration failed:', err));
+        navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW error:', err));
       });
     }
   </script>
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   
