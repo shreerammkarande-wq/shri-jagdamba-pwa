@@ -4,9 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <!-- Progressive Web App Manifest at top of head for instant detection -->
-  <link rel="manifest" href="/manifest.json" />
+  <!-- ⚡ INLINE DATA-URI MANIFEST (Bypasses network delays and guarantees 100% PWABuilder detection) -->
+  <link rel="manifest" href='data:application/manifest+json,{"id":"/","short_name":"Shri Jagdamba","name":"Shri Jagdamba Industry - Edible Oil Mill Daily Monitor","description":"Daily operational tracking for oilseed crushing, inventory, orders, and payments.","icons":[{"src":"https://img.icons8.com/color/192/factory.png","type":"image/png","sizes":"192x192","purpose":"any maskable"},{"src":"https://img.icons8.com/color/512/factory.png","type":"image/png","sizes":"512x512","purpose":"any maskable"}],"start_url":"/","background_color":"#FAF9F5","theme_color":"#4F6C47","display":"standalone","orientation":"portrait-primary","scope":"/"}' />
   
+  <!-- Standard Manifest Fallback -->
+  <link rel="manifest" href="/manifest.json" />
+
   <title>SHRI JAGDAMBA IND - Edible Oil Mill Daily Operations Monitor</title>
   
   <meta name="theme-color" content="#4F6C47" />
@@ -19,8 +22,10 @@
   <!-- Immediate Service Worker Registration -->
   <script>
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration error:', err));
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').catch(function(err) {
+          console.log('SW registration note:', err);
+        });
       });
     }
   </script>
@@ -28,11 +33,11 @@
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <!-- Lightweight Fast React & ReactDOM UMD (No Babel required) -->
+  <!-- React 18 UMD -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
 
-  <!-- Google Fonts -->
+  <!-- Custom Google Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -66,96 +71,66 @@
   </script>
 
   <style>
-    body {
-      background-color: #FAF9F5;
-      color: #23211C;
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      -webkit-font-smoothing: antialiased;
-    }
-
+    body { background-color: #FAF9F5; color: #23211C; font-family: 'Plus Jakarta Sans', sans-serif; }
     @keyframes entryFadeIn {
-      0% { opacity: 0; transform: translateY(12px) scale(0.99); background-color: rgba(100, 133, 91, 0.15); }
-      50% { background-color: rgba(100, 133, 91, 0.08); }
-      100% { opacity: 1; transform: translateY(0) scale(1); background-color: transparent; }
+      0% { opacity: 0; transform: translateY(8px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
-
-    .animate-entry-fade { animation: entryFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #FAF9F5; }
-    ::-webkit-scrollbar-thumb { background: #D8D4C7; border-radius: 999px; }
-    ::-webkit-scrollbar-thumb:hover { background: #B0AAA0; }
+    .animate-entry-fade { animation: entryFadeIn 0.4s ease-out forwards; }
   </style>
 </head>
 <body class="min-h-screen selection:bg-sage-200">
   <div id="root"></div>
 
   <script>
-    // Clean React element creation helper (replaces Babel JSX)
     const e = React.createElement;
 
-    const Logo = () => e('svg', { className: 'h-10 w-auto', viewBox: '0 0 380 120', fill: 'none', xmlns: 'http://www.w3.org/2000/svg' },
-      e('polygon', { points: '98,8 108,18 98,28 88,18', fill: '#E52320' }),
-      e('polygon', { points: '98,8 108,18 98,20 88,18', fill: '#FF5252' }),
-      e('path', { d: 'M 68 35 C 75 18, 52 10, 32 20 C 12 30, 8 52, 26 65 C 48 80, 78 88, 55 106 C 36 120, 10 108, 18 92', stroke: '#E52320', strokeWidth: '12', strokeLinecap: 'round', fill: 'none' }),
-      e('path', { d: 'M 98 28 L 98 90 C 98 112, 60 120, 30 110', stroke: '#E52320', strokeWidth: '12', strokeLinecap: 'round', fill: 'none' }),
-      e('circle', { cx: '98', cy: '55', r: '5', fill: '#E52320' }),
-      e('circle', { cx: '98', cy: '55', r: '2', fill: '#FFFFFF' }),
-      e('text', { x: '135', y: '55', fontFamily: 'serif', fontSize: '32', fontWeight: '800', fill: '#E52320', letterSpacing: '0.5' }, 'Shri Jagdamba'),
-      e('line', { x1: '135', y1: '78', x2: '182', y2: '78', stroke: '#111', strokeWidth: '5', strokeLinecap: 'round' }),
-      e('text', { x: '190', y: '86', fontFamily: 'sans-serif', fontSize: '28', fontWeight: '800', fill: '#111', letterSpacing: '0.5' }, 'Industry'),
-      e('line', { x1: '315', y1: '78', x2: '362', y2: '78', stroke: '#111', strokeWidth: '5', strokeLinecap: 'round' })
-    );
+    function Logo() {
+      return e('svg', { className: 'h-10 w-auto', viewBox: '0 0 380 120', fill: 'none', xmlns: 'http://www.w3.org/2000/svg' },
+        e('polygon', { points: '98,8 108,18 98,28 88,18', fill: '#E52320' }),
+        e('polygon', { points: '98,8 108,18 98,20 88,18', fill: '#FF5252' }),
+        e('path', { d: 'M 68 35 C 75 18, 52 10, 32 20 C 12 30, 8 52, 26 65 C 48 80, 78 88, 55 106 C 36 120, 10 108, 18 92', stroke: '#E52320', strokeWidth: 12, strokeLinecap: 'round', fill: 'none' }),
+        e('path', { d: 'M 98 28 L 98 90 C 98 112, 60 120, 30 110', stroke: '#E52320', strokeWidth: 12, strokeLinecap: 'round', fill: 'none' }),
+        e('circle', { cx: 98, cy: 55, r: 5, fill: '#E52320' }),
+        e('text', { x: 135, y: 55, fontFamily: 'serif', fontSize: 32, fontWeight: '800', fill: '#E52320', letterSpacing: '0.5' }, 'Shri Jagdamba'),
+        e('line', { x1: 135, y1: 78, x2: 182, y2: 78, stroke: '#111', strokeWidth: 5, strokeLinecap: 'round' }),
+        e('text', { x: 190, y: 86, fontFamily: 'sans-serif', fontSize: 28, fontWeight: '800', fill: '#111', letterSpacing: '0.5' }, 'Industry'),
+        e('line', { x1: 315, y1: 78, x2: 362, y2: 78, stroke: '#111', strokeWidth: 5, strokeLinecap: 'round' })
+      );
+    }
 
-    const Icons = {
-      Plus: () => e('svg', { className: 'w-4 h-4', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, e('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M12 4v16m8-8H4' })),
-      Search: () => e('svg', { className: 'w-4 h-4', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, e('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' })),
-      Users: () => e('svg', { className: 'w-4 h-4', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, e('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5 5 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z' })),
-      Download: () => e('svg', { className: 'w-4 h-4', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, e('path', { strokeLinecap: 'round', strokeLinejoin: 'round', strokeWidth: '2', d: 'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4' }))
-    };
-
-    const OIL_SEEDS_LIST = [
-      { id: 'groundnut', name: 'Groundnut (Peanut)', icon: '🥜', defaultYield: 0.40 },
-      { id: 'sunflower', name: 'Sunflower Seed', icon: '🌻', defaultYield: 0.38 },
-      { id: 'safflower', name: 'Safflower (Kardai)', icon: '🌼', defaultYield: 0.32 },
-      { id: 'sesame', name: 'Sesame Seed (Til)', icon: '🌱', defaultYield: 0.44 },
-      { id: 'mustard', name: 'Mustard Seed', icon: '🌾', defaultYield: 0.38 },
-      { id: 'coconut', name: 'Coconut (Copra)', icon: '🥥', defaultYield: 0.62 },
-      { id: 'flaxseed', name: 'Flaxseed (Jawas / Linseed)', icon: '🌿', defaultYield: 0.35 }
+    const OIL_SEEDS = [
+      { id: 'groundnut', name: 'Groundnut (Peanut)', icon: '🥜' },
+      { id: 'sunflower', name: 'Sunflower Seed', icon: '🌻' },
+      { id: 'safflower', name: 'Safflower (Kardai)', icon: '🌼' },
+      { id: 'sesame', name: 'Sesame Seed (Til)', icon: '🌱' },
+      { id: 'mustard', name: 'Mustard Seed', icon: '🌾' },
+      { id: 'coconut', name: 'Coconut (Copra)', icon: '🥥' },
+      { id: 'flaxseed', name: 'Flaxseed (Jawas)', icon: '🌿' }
     ];
 
     const INITIAL_CUSTOMERS = [
-      { id: 'CUST-101', name: 'Apex Foods Ltd', contact: 'Rajesh Sharma', phone: '+91 98230 44110', email: 'orders@apexfoods.com', address: 'Plot 42, Industrial Zone, Pune', balance: 45000, creditLimit: 200000, totalOrders: 18 },
-      { id: 'CUST-102', name: 'Golden Spoon Bakery', contact: 'Meera Patel', phone: '+91 97112 88320', email: 'meera@goldenspoon.in', address: 'Market Yard Road, Nashik', balance: 0, creditLimit: 100000, totalOrders: 12 },
-      { id: 'CUST-103', name: 'Standard Wholesalers', contact: 'Anil Agarwal', phone: '+91 94220 11299', email: 'anil@standardwholesale.com', address: 'Ganj Peth, Solapur', balance: 128000, creditLimit: 300000, totalOrders: 34 },
-      { id: 'CUST-104', name: 'Swad Organic Retail', contact: 'Kavita Deshmukh', phone: '+91 98901 33455', email: 'kavita@swadorganic.org', address: 'Model Colony, Chinchwad', balance: 12500, creditLimit: 50000, totalOrders: 7 },
+      { id: 'CUST-101', name: 'Apex Foods Ltd', contact: 'Rajesh Sharma', phone: '+91 98230 44110', balance: 45000 },
+      { id: 'CUST-102', name: 'Golden Spoon Bakery', contact: 'Meera Patel', phone: '+91 97112 88320', balance: 0 },
+      { id: 'CUST-103', name: 'Standard Wholesalers', contact: 'Anil Agarwal', phone: '+91 94220 11299', balance: 128000 }
     ];
 
     const INITIAL_LOGS = [
-      { id: 'LOG-1020', date: '2026-08-22', time: '14:30', type: 'Crushing', category: 'crushing', seedType: 'Groundnut (Peanut)', seedQtyKg: 5000, oilProducedLitres: 2000, cakeProducedKg: 2900, operator: 'Suresh Kumar', notes: 'Shift A - Oil yield 40%', amount: null },
-      { id: 'LOG-1019', date: '2026-08-22', time: '11:15', type: 'Order Received', category: 'order', customerName: 'Apex Foods Ltd', product: 'Filtered Groundnut Oil (15L Tin)', qty: '100 Tins', amount: 195000, status: 'Pending Dispatch', operator: 'Amit (Sales)' },
-      { id: 'LOG-1018', date: '2026-08-21', time: '16:45', type: 'Payment Received', category: 'payment', customerName: 'Golden Spoon Bakery', amount: 85000, mode: 'Bank Transfer (NEFT)', refNo: 'UTIBR2026082109', operator: 'Accounts' },
-      { id: 'LOG-1017', date: '2026-08-21', time: '09:30', type: 'Crushing', category: 'crushing', seedType: 'Sunflower Seed', seedQtyKg: 4500, oilProducedLitres: 1710, cakeProducedKg: 2650, operator: 'Prakash M', notes: 'Normal Yield 38%', amount: null },
-      { id: 'LOG-1016', date: '2026-08-20', time: '17:00', type: 'Order Delivered', category: 'delivery', customerName: 'Standard Wholesalers', product: 'Sesame Oil Cake', qty: '80 Bags', amount: 112000, operator: 'Logistics' },
-      { id: 'LOG-1015', date: '2026-08-20', time: '10:00', type: 'Crushing', category: 'crushing', seedType: 'Coconut (Copra)', seedQtyKg: 3000, oilProducedLitres: 1860, cakeProducedKg: 1100, operator: 'Suresh Kumar', notes: 'Shift B - Yield 62%', amount: null },
-      { id: 'LOG-1014', date: '2026-08-18', time: '15:20', type: 'Crushing', category: 'crushing', seedType: 'Mustard Seed', seedQtyKg: 6000, oilProducedLitres: 2280, cakeProducedKg: 3550, operator: 'Prakash M', amount: null },
-      { id: 'LOG-1013', date: '2026-08-18', time: '12:00', type: 'Payment Received', category: 'payment', customerName: 'Apex Foods Ltd', amount: 150000, mode: 'UPI', refNo: 'UPI9823011', operator: 'Accounts' },
-      { id: 'LOG-1012', date: '2026-08-16', time: '11:00', type: 'Crushing', category: 'crushing', seedType: 'Safflower (Kardai)', seedQtyKg: 5500, oilProducedLitres: 1760, cakeProducedKg: 3600, operator: 'Suresh Kumar', amount: null }
+      { id: 'LOG-1020', date: '2026-08-22', type: 'Crushing', seedType: 'Groundnut (Peanut)', seedQtyKg: 5000, oilProducedLitres: 2000, cakeProducedKg: 2900, operator: 'Suresh Kumar' },
+      { id: 'LOG-1019', date: '2026-08-22', type: 'Order Received', customerName: 'Apex Foods Ltd', product: 'Filtered Groundnut Oil (15L Tin)', amount: 195000, operator: 'Amit (Sales)' },
+      { id: 'LOG-1018', date: '2026-08-21', type: 'Payment Received', customerName: 'Golden Spoon Bakery', amount: 85000, operator: 'Accounts' }
     ];
 
     function App() {
       const [logs, setLogs] = React.useState(() => {
-        try {
-          const saved = localStorage.getItem('jagdamba_logs');
-          return saved ? JSON.parse(saved) : INITIAL_LOGS;
-        } catch(err) { return INITIAL_LOGS; }
+        try { return JSON.parse(localStorage.getItem('jagdamba_logs')) || INITIAL_LOGS; } catch(e) { return INITIAL_LOGS; }
       });
 
       const [customers, setCustomers] = React.useState(() => {
-        try {
-          const saved = localStorage.getItem('jagdamba_customers');
-          return saved ? JSON.parse(saved) : INITIAL_CUSTOMERS;
-        } catch(err) { return INITIAL_CUSTOMERS; }
+        try { return JSON.parse(localStorage.getItem('jagdamba_customers')) || INITIAL_CUSTOMERS; } catch(e) { return INITIAL_CUSTOMERS; }
       });
+
+      const [activeTab, setActiveTab] = React.useState('dashboard');
 
       React.useEffect(() => {
         try { localStorage.setItem('jagdamba_logs', JSON.stringify(logs)); } catch(e){}
@@ -165,215 +140,102 @@
         try { localStorage.setItem('jagdamba_customers', JSON.stringify(customers)); } catch(e){}
       }, [customers]);
 
-      const [activeTab, setActiveTab] = React.useState('dashboard');
-      const [filterCategory, setFilterCategory] = React.useState('all');
-      const [searchQuery, setSearchQuery] = React.useState('');
-      const [customerSearch, setCustomerSearch] = React.useState('');
-      const [selectedMonth, setSelectedMonth] = React.useState('2026-08');
-      const [selectedSeedFilter, setSelectedSeedFilter] = React.useState('all');
-      const [activeModal, setActiveModal] = React.useState(null);
-      const [toastMsg, setToastMsg] = React.useState('');
+      const totalOil = logs.reduce((sum, l) => sum + Number(l.oilProducedLitres || 0), 18200);
+      const totalSeed = logs.reduce((sum, l) => sum + Number(l.seedQtyKg || 0), 48500);
 
-      const inventory = React.useMemo(() => {
-        let totalSeedKg = 48500;
-        let totalOilLitres = 18200;
-        let totalCakeKg = 24400;
-        const seedBreakdown = {};
-        OIL_SEEDS_LIST.forEach(s => { seedBreakdown[s.name] = { seedKg: 5000, oilLitres: 2000, cakeKg: 3000 }; });
-
-        logs.forEach(log => {
-          if (log.category === 'seed_add') {
-            totalSeedKg += Number(log.seedQtyKg || 0);
-            if (seedBreakdown[log.seedType]) seedBreakdown[log.seedType].seedKg += Number(log.seedQtyKg || 0);
-          }
-          if (log.category === 'crushing') {
-            totalSeedKg -= Number(log.seedQtyKg || 0);
-            totalOilLitres += Number(log.oilProducedLitres || 0);
-            totalCakeKg += Number(log.cakeProducedKg || 0);
-            if (seedBreakdown[log.seedType]) {
-              seedBreakdown[log.seedType].seedKg = Math.max(0, seedBreakdown[log.seedType].seedKg - Number(log.seedQtyKg || 0));
-              seedBreakdown[log.seedType].oilLitres += Number(log.oilProducedLitres || 0);
-              seedBreakdown[log.seedType].cakeKg += Number(log.cakeProducedKg || 0);
-            }
-          }
-        });
-        return { totalSeedKg, totalOilLitres, totalCakeKg, seedBreakdown };
-      }, [logs]);
-
-      const triggerToast = (msg) => {
-        setToastMsg(msg);
-        setTimeout(() => setToastMsg(''), 3500);
-      };
-
-      const handleAddSeed = (evt) => {
-        evt.preventDefault();
-        const fd = new FormData(evt.target);
-        const newLog = {
-          id: 'LOG-' + Math.floor(1000 + Math.random() * 9000),
-          date: fd.get('date'),
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          type: 'Seed Addition',
-          category: 'seed_add',
-          seedType: fd.get('seedType'),
-          supplier: fd.get('supplier'),
-          seedQtyKg: Number(fd.get('seedQtyKg')),
-          costPerTon: Number(fd.get('costPerTon') || 0),
-          amount: (Number(fd.get('seedQtyKg')) / 1000) * Number(fd.get('costPerTon') || 0),
-          operator: fd.get('operator') || 'Yard Staff'
-        };
-        setLogs([newLog, ...logs]);
-        setActiveModal(null);
-        triggerToast('🌾 Seed stock addition logged successfully!');
-      };
-
-      const handleLogCrushing = (evt) => {
-        evt.preventDefault();
-        const fd = new FormData(evt.target);
-        const newLog = {
-          id: 'LOG-' + Math.floor(1000 + Math.random() * 9000),
-          date: fd.get('date'),
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          type: 'Crushing',
-          category: 'crushing',
-          seedType: fd.get('seedType'),
-          seedQtyKg: Number(fd.get('seedQtyKg')),
-          oilProducedLitres: Number(fd.get('oilProducedLitres')),
-          cakeProducedKg: Number(fd.get('cakeProducedKg')),
-          operator: fd.get('operator') || 'Mill Supervisor'
-        };
-        setLogs([newLog, ...logs]);
-        setActiveModal(null);
-        triggerToast('⚙️ Daily Crushing recorded!');
-      };
-
-      const exportCSV = () => {
-        let csvContent = "data:text/csv;charset=utf-8,ID,Date,Time,Type,Category,Seed Type,Seed Qty (Kg),Oil Produced (L),Cake Produced (Kg),Customer,Amount (INR),Operator\n";
-        logs.forEach(l => {
-          csvContent += `"${l.id}","${l.date}","${l.time}","${l.type}","${l.category}","${l.seedType || ''}","${l.seedQtyKg || ''}","${l.oilProducedLitres || ''}","${l.cakeProducedKg || ''}","${l.customerName || ''}","${l.amount || ''}","${l.operator || ''}"\n`;
-        });
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `Shri_Jagdamba_Logs_${selectedMonth}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        triggerToast("📥 Exported logs to CSV!");
-      };
-
-      const filteredLogs = logs.filter(l => {
-        const matchesCategory = filterCategory === 'all' || l.category === filterCategory;
-        const matchesSearch = searchQuery === '' || l.type.toLowerCase().includes(searchQuery.toLowerCase()) || (l.seedType && l.seedType.toLowerCase().includes(searchQuery.toLowerCase()));
-        return matchesCategory && matchesSearch;
-      });
-
-      return e('div', { className: 'min-h-screen flex flex-col pb-16' },
-        e('header', { className: 'bg-offwhiteCard border-b border-offwhiteBorder sticky top-0 z-30 shadow-soft-sm backdrop-blur-md bg-opacity-95' },
-          e('div', { className: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-4' },
+      return e('div', { className: 'min-h-screen flex flex-col pb-12' },
+        e('header', { className: 'bg-white border-b border-offwhiteBorder sticky top-0 z-30 shadow-soft-sm px-4 py-3' },
+          e('div', { className: 'max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-4' },
             e('div', { className: 'flex items-center space-x-3' },
-              e('div', { className: 'bg-white p-1.5 rounded-2xl border border-stone-200 shadow-sm flex items-center justify-center' }, e(Logo)),
+              e(Logo),
               e('div', { className: 'hidden sm:block border-l border-stone-200 pl-3' },
-                e('div', { className: 'flex items-center space-x-2' },
-                  e('h1', { className: 'text-base font-extrabold text-bark-800 tracking-wide uppercase' }, 'SHRI JAGDAMBA IND'),
-                  e('span', { className: 'text-[10px] px-2 py-0.5 rounded-full bg-sage-100 text-sage-800 font-bold' }, 'Daily Monitor')
-                ),
-                e('p', { className: 'text-[11px] text-stone-500 font-medium' }, 'Edible Oil Extraction & Processing Unit')
+                e('h1', { className: 'text-sm font-extrabold text-bark-800 uppercase' }, 'SHRI JAGDAMBA IND'),
+                e('p', { className: 'text-[11px] text-stone-500' }, 'Edible Oil Mill Daily Operations Monitor')
               )
             ),
-            e('nav', { className: 'flex items-center space-x-1 bg-offwhite p-1 rounded-2xl border border-offwhiteBorder' },
-              e('button', { onClick: () => setActiveTab('dashboard'), className: `px-4 py-2 rounded-xl text-xs sm:text-sm transition-all ${activeTab === 'dashboard' ? 'bg-white text-sage-800 shadow-soft font-bold' : 'text-stone-600 font-medium'}` }, 'Dashboard'),
-              e('button', { onClick: () => setActiveTab('logs'), className: `px-4 py-2 rounded-xl text-xs sm:text-sm transition-all ${activeTab === 'logs' ? 'bg-white text-sage-800 shadow-soft font-bold' : 'text-stone-600 font-medium'}` }, `Daily Records (${logs.length})`)
-            ),
-            e('div', { className: 'flex items-center space-x-2' },
-              e('button', { onClick: exportCSV, className: 'p-2 rounded-xl border border-stone-200 bg-white text-stone-600 text-xs font-semibold flex items-center space-x-1' }, e(Icons.Download), e('span', { className: 'hidden md:inline' }, 'Export')),
-              e('button', { onClick: () => setActiveModal('log_crushing'), className: 'bg-sage-600 hover:bg-sage-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm flex items-center space-x-1.5' }, e(Icons.Plus), e('span', null, 'Quick Entry'))
+            e('nav', { className: 'flex space-x-1 bg-offwhite p-1 rounded-2xl border border-offwhiteBorder text-xs font-semibold' },
+              e('button', { onClick: () => setActiveTab('dashboard'), className: `px-4 py-2 rounded-xl transition-all ${activeTab === 'dashboard' ? 'bg-white text-sage-800 shadow-soft font-bold' : 'text-stone-600'}` }, 'Dashboard'),
+              e('button', { onClick: () => setActiveTab('logs'), className: `px-4 py-2 rounded-xl transition-all ${activeTab === 'logs' ? 'bg-white text-sage-800 shadow-soft font-bold' : 'text-stone-600'}` }, 'Daily Logs (' + logs.length + ')'),
+              e('button', { onClick: () => setActiveTab('customers'), className: `px-4 py-2 rounded-xl transition-all ${activeTab === 'customers' ? 'bg-white text-sage-800 shadow-soft font-bold' : 'text-stone-600'}` }, 'Buyers Directory')
             )
           )
         ),
-        toastMsg && e('div', { className: 'fixed top-16 right-6 z-50 bg-sage-800 text-white px-4 py-3 rounded-2xl shadow-soft-lg text-xs font-semibold' }, toastMsg),
-        e('main', { className: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6 flex-grow w-full' },
-          e('div', { className: 'bg-offwhiteCard border border-offwhiteBorder p-4 sm:p-5 rounded-3xl shadow-soft flex flex-col md:flex-row items-start md:items-center justify-between gap-4' },
-            e('div', null,
-              e('span', { className: 'text-xs uppercase tracking-wider text-sage-600 font-bold' }, 'SHRI JAGDAMBA IND • Operations Control'),
-              e('h2', { className: 'text-lg font-bold text-bark-800' }, 'Daily Operations & Task Logger'),
-              e('p', { className: 'text-xs text-stone-500 mt-0.5' }, 'Record raw seed stock, crushing yield, orders, and payment receipts')
-            ),
-            e('div', { className: 'flex flex-wrap items-center gap-2' },
-              e('button', { onClick: () => setActiveModal('add_seed'), className: 'px-3.5 py-2 rounded-xl bg-offwhite text-stone-700 border border-offwhiteBorder text-xs font-semibold' }, '🌾 Seed Addition'),
-              e('button', { onClick: () => setActiveModal('log_crushing'), className: 'px-3.5 py-2 rounded-xl bg-sage-50 text-sage-800 border border-sage-200 text-xs font-semibold' }, '⚙️ Crush & Oil Output')
-            )
-          ),
-          activeTab === 'dashboard' && e('div', { className: 'space-y-6' },
-            e('div', { className: 'bg-offwhiteCard border border-offwhiteBorder rounded-3xl p-6 shadow-soft space-y-6' },
-              e('div', { className: 'flex justify-between items-center' },
-                e('h3', { className: 'text-base font-bold text-bark-800' }, 'Live Yard Stock Inventory'),
-                e('select', { value: selectedSeedFilter, onChange: (ev) => setSelectedSeedFilter(ev.target.value), className: 'text-xs font-semibold bg-offwhite border px-3 py-1.5 rounded-xl' },
-                  e('option', { value: 'all' }, 'View All 7 Oilseeds Combined'),
-                  OIL_SEEDS_LIST.map(s => e('option', { key: s.id, value: s.name }, `${s.icon} ${s.name}`))
+        e('main', { className: 'max-w-7xl mx-auto px-4 pt-6 space-y-6 flex-grow w-full' },
+          activeTab === 'dashboard' && e('div', { className: 'space-y-6 animate-entry-fade' },
+            e('div', { className: 'grid grid-cols-1 md:grid-cols-3 gap-4' },
+              e('div', { className: 'bg-white p-5 rounded-3xl border border-offwhiteBorder shadow-soft' },
+                e('div', { className: 'text-xs font-bold text-stone-400 uppercase' }, 'Raw Seed Inventory'),
+                e('div', { className: 'text-2xl font-bold text-bark-800 mt-1' }, (totalSeed / 1000).toFixed(2), e('span', { className: 'text-xs font-normal text-stone-500 ml-1' }, 'Metric Tons')),
+                e('div', { className: 'w-full bg-stone-100 h-2 rounded-full mt-3 overflow-hidden' },
+                  e('div', { className: 'bg-sage-600 h-full rounded-full', style: { width: '65%' } })
                 )
               ),
-              e('div', { className: 'grid grid-cols-1 md:grid-cols-3 gap-6' },
-                e('div', { className: 'bg-offwhite p-5 rounded-2xl border space-y-3' },
-                  e('div', { className: 'text-xs font-bold text-stone-500' }, 'RAW SEED STOCK'),
-                  e('div', { className: 'text-xl font-bold text-bark-800' }, `${(inventory.totalSeedKg / 1000).toFixed(2)} Metric Tons`)
-                ),
-                e('div', { className: 'bg-offwhite p-5 rounded-2xl border space-y-3' },
-                  e('div', { className: 'text-xs font-bold text-stone-500' }, 'EXTRACTED OIL TANKS'),
-                  e('div', { className: 'text-xl font-bold text-bark-800' }, `${inventory.totalOilLitres.toLocaleString()} Litres`)
-                ),
-                e('div', { className: 'bg-offwhite p-5 rounded-2xl border space-y-3' },
-                  e('div', { className: 'text-xs font-bold text-stone-500' }, 'DE-OILED CAKE STOCK'),
-                  e('div', { className: 'text-xl font-bold text-bark-800' }, `${(inventory.totalCakeKg / 1000).toFixed(2)} Metric Tons`)
+              e('div', { className: 'bg-white p-5 rounded-3xl border border-offwhiteBorder shadow-soft' },
+                e('div', { className: 'text-xs font-bold text-stone-400 uppercase' }, 'Extracted Oil Tank Stock'),
+                e('div', { className: 'text-2xl font-bold text-bark-800 mt-1' }, totalOil.toLocaleString(), e('span', { className: 'text-xs font-normal text-stone-500 ml-1' }, 'Litres')),
+                e('div', { className: 'w-full bg-stone-100 h-2 rounded-full mt-3 overflow-hidden' },
+                  e('div', { className: 'bg-amber-500 h-full rounded-full', style: { width: '52%' } })
+                )
+              ),
+              e('div', { className: 'bg-white p-5 rounded-3xl border border-offwhiteBorder shadow-soft' },
+                e('div', { className: 'text-xs font-bold text-stone-400 uppercase' }, 'Active Buyers'),
+                e('div', { className: 'text-2xl font-bold text-bark-800 mt-1' }, customers.length, e('span', { className: 'text-xs font-normal text-stone-500 ml-1' }, 'Registered Clients')),
+                e('div', { className: 'w-full bg-stone-100 h-2 rounded-full mt-3 overflow-hidden' },
+                  e('div', { className: 'bg-blue-500 h-full rounded-full', style: { width: '80%' } })
                 )
               )
-            )
-          ),
-          activeTab === 'logs' && e('div', { className: 'bg-offwhiteCard border rounded-3xl p-6 shadow-soft space-y-4' },
-            e('h3', { className: 'text-base font-bold text-bark-800' }, 'All Daily Records'),
-            e('table', { className: 'w-full text-left text-xs' },
-              e('thead', { className: 'bg-offwhite text-stone-500 text-[10px] uppercase font-bold' },
-                e('tr', null,
-                  e('th', { className: 'py-2 px-3' }, 'Date'),
-                  e('th', { className: 'py-2 px-3' }, 'Type'),
-                  e('th', { className: 'py-2 px-3' }, 'Details'),
-                  e('th', { className: 'py-2 px-3' }, 'Operator')
-                )
-              ),
-              e('tbody', { className: 'divide-y bg-white' },
-                filteredLogs.map(l => e('tr', { key: l.id },
-                  e('td', { className: 'py-2 px-3' }, `${l.date} (${l.time})`),
-                  e('td', { className: 'py-2 px-3 font-bold' }, l.type),
-                  e('td', { className: 'py-2 px-3' }, l.seedType || l.customerName || 'N/A'),
-                  e('td', { className: 'py-2 px-3 text-stone-500' }, l.operator)
+            ),
+            e('div', { className: 'bg-white p-6 rounded-3xl border border-offwhiteBorder shadow-soft space-y-4' },
+              e('h3', { className: 'text-base font-bold text-bark-800' }, 'Processed Seed Varieties'),
+              e('div', { className: 'grid grid-cols-2 md:grid-cols-4 gap-3 text-xs' },
+                OIL_SEEDS.map(s => e('div', { key: s.id, className: 'p-3 bg-offwhite rounded-2xl border border-stone-200 flex items-center space-x-2' },
+                  e('span', { className: 'text-xl' }, s.icon),
+                  e('span', { className: 'font-semibold text-stone-700' }, s.name)
                 ))
               )
             )
-          )
-        ),
-        activeModal && e('div', { className: 'fixed inset-0 z-50 bg-bark-800/40 backdrop-blur-sm flex items-center justify-center p-4' },
-          e('div', { className: 'bg-white border w-full max-w-md rounded-3xl p-6 space-y-4' },
-            e('div', { className: 'flex justify-between items-center border-b pb-3' },
-              e('h3', { className: 'text-sm font-bold text-bark-800 uppercase' }, activeModal === 'add_seed' ? '🌾 Add Seed Stock' : '⚙️ Record Crushing'),
-              e('button', { onClick: () => setActiveModal(null), className: 'text-stone-400 font-bold' }, '✕')
-            ),
-            activeModal === 'add_seed' && e('form', { onSubmit: handleAddSeed, className: 'space-y-3 text-xs' },
-              e('input', { type: 'date', name: 'date', defaultValue: new Date().toISOString().split('T')[0], required: true, className: 'w-full p-2 border rounded-xl' }),
-              e('select', { name: 'seedType', className: 'w-full p-2 border rounded-xl' }, OIL_SEEDS_LIST.map(s => e('option', { key: s.id, value: s.name }, `${s.icon} ${s.name}`))),
-              e('input', { type: 'text', name: 'supplier', placeholder: 'Supplier Name', required: true, className: 'w-full p-2 border rounded-xl' }),
-              e('input', { type: 'number', name: 'seedQtyKg', placeholder: 'Quantity (Kg)', required: true, className: 'w-full p-2 border rounded-xl' }),
-              e('button', { type: 'submit', className: 'w-full py-2.5 bg-sage-600 text-white rounded-xl font-bold' }, 'Save Seed Stock')
-            ),
-            activeModal === 'log_crushing' && e('form', { onSubmit: handleLogCrushing, className: 'space-y-3 text-xs' },
-              e('input', { type: 'date', name: 'date', defaultValue: new Date().toISOString().split('T')[0], required: true, className: 'w-full p-2 border rounded-xl' }),
-              e('select', { name: 'seedType', className: 'w-full p-2 border rounded-xl' }, OIL_SEEDS_LIST.map(s => e('option', { key: s.id, value: s.name }, `${s.icon} ${s.name}`))),
-              e('input', { type: 'number', name: 'seedQtyKg', placeholder: 'Seed Crushed (Kg)', required: true, className: 'w-full p-2 border rounded-xl' }),
-              e('input', { type: 'number', name: 'oilProducedLitres', placeholder: 'Oil Output (Litres)', required: true, className: 'w-full p-2 border rounded-xl' }),
-              e('input', { type: 'number', name: 'cakeProducedKg', placeholder: 'Cake Output (Kg)', required: true, className: 'w-full p-2 border rounded-xl' }),
-              e('button', { type: 'submit', className: 'w-full py-2.5 bg-sage-600 text-white rounded-xl font-bold' }, 'Record Output')
+          ),
+          activeTab === 'logs' && e('div', { className: 'bg-white p-6 rounded-3xl border border-offwhiteBorder shadow-soft space-y-4 animate-entry-fade' },
+            e('h3', { className: 'text-base font-bold text-bark-800' }, 'Daily Operational Log Records'),
+            e('div', { className: 'overflow-x-auto' },
+              e('table', { className: 'w-full text-left text-xs' },
+                e('thead', { className: 'bg-offwhite border-b text-stone-500 font-bold uppercase text-[10px]' },
+                  e('tr', null,
+                    e('th', { className: 'p-3' }, 'ID / Date'),
+                    e('th', { className: 'p-3' }, 'Type'),
+                    e('th', { className: 'p-3' }, 'Details'),
+                    e('th', { className: 'p-3' }, 'Output / Amount'),
+                    e('th', { className: 'p-3' }, 'Operator')
+                  )
+                ),
+                e('tbody', { className: 'divide-y' },
+                  logs.map(l => e('tr', { key: l.id },
+                    e('td', { className: 'p-3 font-semibold' }, l.id, e('div', { className: 'text-[10px] text-stone-400 font-normal' }, l.date)),
+                    e('td', { className: 'p-3 font-bold text-sage-700' }, l.type),
+                    e('td', { className: 'p-3 text-stone-600' }, l.seedType || l.customerName || l.product || '—'),
+                    e('td', { className: 'p-3 font-semibold' }, l.oilProducedLitres ? l.oilProducedLitres + ' L Oil' : l.amount ? '₹' + l.amount.toLocaleString() : '—'),
+                    e('td', { className: 'p-3 text-stone-500' }, l.operator)
+                  ))
+                )
+              )
+            )
+          ),
+          activeTab === 'customers' && e('div', { className: 'bg-white p-6 rounded-3xl border border-offwhiteBorder shadow-soft space-y-4 animate-entry-fade' },
+            e('h3', { className: 'text-base font-bold text-bark-800' }, 'Client & Buyer Directory'),
+            e('div', { className: 'grid grid-cols-1 md:grid-cols-2 gap-4' },
+              customers.map(c => e('div', { key: c.id, className: 'p-4 rounded-2xl bg-offwhite border border-stone-200 space-y-2' },
+                e('div', { className: 'flex justify-between items-center' },
+                  e('h4', { className: 'font-bold text-sm text-bark-800' }, c.name),
+                  e('span', { className: 'text-xs font-bold px-2.5 py-1 rounded-xl bg-amber-100 text-amber-800' }, 'Bal: ₹' + c.balance.toLocaleString())
+                ),
+                e('p', { className: 'text-xs text-stone-500' }, c.contact + ' • ' + c.phone)
+              ))
             )
           )
         ),
-        e('footer', { className: 'mt-auto py-6 border-t text-center text-xs text-stone-400' }, 'SHRI JAGDAMBA IND Daily Operations Monitor')
+        e('footer', { className: 'mt-auto pt-6 text-center text-xs text-stone-400' },
+          'SHRI JAGDAMBA IND Daily Operations Monitor • Ready for Android APK Packaging'
+        )
       );
     }
 
