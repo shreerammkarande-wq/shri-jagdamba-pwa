@@ -1,32 +1,27 @@
 {
-  "id": "/",
-  "short_name": "Shri Jagdamba",
+  "background_color": "#faf9f5",
+  "dir": "ltr",
+  "display": "standalone",
   "name": "Shri Jagdamba Industry",
-  "description": "Daily operational tracking for oilseed crushing, inventory, orders, and payments.",
+  "orientation": "portrait",
+  "scope": "/",
+  "short_name": "Shri Jagdamba",
+  "start_url": "/",
+  "theme_color": "#4f6c47",
   "icons": [
     {
       "src": "https://img.icons8.com/color/192/factory.png",
       "type": "image/png",
       "sizes": "192x192",
-      "purpose": "any"
-    },
-    {
-      "src": "https://img.icons8.com/color/512/factory.png",
-      "type": "image/png",
-      "sizes": "512x512",
-      "purpose": "any"
-    },
-    {
-      "src": "https://img.icons8.com/color/512/factory.png",
-      "type": "image/png",
-      "sizes": "512x512",
-      "purpose": "maskable"
+      "isSquare": true,
+      "isPng": true,
+      "isWebp": false,
+      "isJpg": false,
+      "width": 192,
+      "is512x512": false,
+      "is256x256": false,
+      "is192x192": true
     }
   ],
-  "start_url": "/",
-  "background_color": "#FAF9F5",
-  "theme_color": "#4F6C47",
-  "display": "standalone",
-  "orientation": "portrait-primary",
-  "scope": "/"
+  "description": "Daily operational tracking for oilseed crushing, inventory, orders, and payments."
 }
