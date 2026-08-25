@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Shri Jagdamba Industry - Daily Monitor</title>
+  <meta name="description" content="Daily Operational & Sales Monitoring System for Shri Jagdamba Industry" />
+  <meta name="theme-color" content="#2D6A4F" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Shri Jagdamba" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/shreerammkarande-wq/shri-jagdamba-app4/main/icon-512.png" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA_B7m6gqEhm-A2lXc9rqV8uy_3Adg2Fps",
+      authDomain: "shri-jagdamba-monitor.firebaseapp.com",
+      projectId: "shri-jagdamba-monitor",
+      storageBucket: "shri-jagdamba-monitor.firebasestorage.app",
+      messagingSenderId: "987532374562",
+      appId: "1:987532374562:web:4b4e682f68e185a300d07b",
+      measurementId: "G-ZM3FF6SGY0"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then((reg) => console.log('SW Registered:', reg.scope))
+          .catch((err) => console.log('SW Registration failed:', err));
+      });
+    }
+  </script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    html, body {
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #F8FAF8;
+      color: #1B2A22;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #EAEFEA; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #A3B899; border-radius: 4px; }
+  </style>
+</head>
+<body class="bg-[#F8FAF8] text-[#1B2A22] antialiased selection:bg-[#2D6A4F] selection:text-white pb-24 md:pb-8 overflow-x-hidden">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const SEED_TYPES = [
+      { id: 'groundnut', name: 'Groundnut', unit: 'MT', yieldOil: 42, yieldCake: 56 },
+      { id: 'sunflower', name: 'Sunflower', unit: 'MT', yieldOil: 38, yieldCake: 60 },
+      { id: 'safflower', name: 'Safflower', unit: 'MT', yieldOil: 32, yieldCake: 66 },
+      { id: 'sesame', name: 'Sesame', unit: 'MT', yieldOil: 45, yieldCake: 53 },
+      { id: 'mustard', name: 'Mustard', unit: 'MT', yieldOil: 35, yieldCake: 63 },
+      { id: 'coconut', name: 'Coconut (Copra)', unit: 'MT', yieldOil: 62, yieldCake: 36 },
+      { id: 'flaxseed', name: 'Flaxseed', unit: 'MT', yieldOil: 34, yieldCake: 64 }
+    ];
+
+    const PRODUCT_OPTIONS = [
+      { group: 'Groundnut Products', items: ['Groundnut Oil (Loose Oil)', 'Groundnut Oil (5 ltr)', 'Groundnut Oil (1 ltr)', 'Groundnut Oil (500 ml)', 'Groundnut Oil (200 ml)', 'Groundnut Oil (100 ml)', 'Groundnut Cake (Loose)', 'Groundnut Cake (50 Kg Bag)', 'Groundnut Cake (25 Kg Bag)'] },
+      { group: 'Sunflower Products', items: ['Sunflower Oil (Loose Oil)', 'Sunflower Oil (5 ltr)', 'Sunflower Oil (1 ltr)', 'Sunflower Oil (500 ml)', 'Sunflower Oil (200 ml)', 'Sunflower Oil (100 ml)', 'Sunflower Cake (Loose)', 'Sunflower Cake (50 Kg Bag)', 'Sunflower Cake (25 Kg Bag)'] },
+      { group: 'Safflower Products', items: ['Safflower Oil (Loose Oil)', 'Safflower Oil (5 ltr)', 'Safflower Oil (1 ltr)', 'Safflower Oil (500 ml)', 'Safflower Oil (200 ml)', 'Safflower Oil (100 ml)', 'Safflower Cake (Loose)', 'Safflower Cake (50 Kg Bag)', 'Safflower Cake (25 Kg Bag)'] },
+      { group: 'Sesame Products', items: ['Sesame Oil (Loose Oil)', 'Sesame Oil (5 ltr)', 'Sesame Oil (1 ltr)', 'Sesame Oil (500 ml)', 'Sesame Oil (200 ml)', 'Sesame Oil (100 ml)', 'Sesame Cake (Loose)', 'Sesame Cake (50 Kg Bag)', 'Sesame Cake (25 Kg Bag)'] },
+      { group: 'Mustard Products', items: ['Mustard Oil (Loose Oil)', 'Mustard Oil (5 ltr)', 'Mustard Oil (1 ltr)', 'Mustard Oil (500 ml)', 'Mustard Oil (200 ml)', 'Mustard Oil (100 ml)', 'Mustard Cake (Loose)', 'Mustard Cake (50 Kg Bag)', 'Mustard Cake (25 Kg Bag)'] },
+      { group: 'Coconut Products', items: ['Coconut Oil (Loose Oil)', 'Coconut Oil (5 ltr)', 'Coconut Oil (1 ltr)', 'Coconut Oil (500 ml)', 'Coconut Oil (200 ml)', 'Coconut Oil (100 ml)', 'Coconut Cake (Loose)', 'Coconut Cake (50 Kg Bag)', 'Coconut Cake (25 Kg Bag)'] },
+      { group: 'Flaxseed Products', items: ['Flaxseed Oil (Loose Oil)', 'Flaxseed Oil (5 ltr)', 'Flaxseed Oil (1 ltr)', 'Flaxseed Oil (500 ml)', 'Flaxseed Oil (200 ml)', 'Flaxseed Oil (100 ml)', 'Flaxseed Cake (Loose)', 'Flaxseed Cake (50 Kg Bag)', 'Flaxseed Cake (25 Kg Bag)'] }
+    ];
+
+    function BrandLogo({ className = "w-9 h-9" }) {
+      return (
+        <div className={`flex items-center justify-center rounded-xl bg-[#2D6A4F] text-white font-black shadow-md ${className}`}>
+          <i className="fa-solid fa-seedling text-base"></i>
+        </div>
+      );
+    }
+
+    function App() {
+      const [tab, setTab] = useState('dashboard');
+      const [logs, setLogs] = useState([]);
+      const [customers, setCustomers] = useState([]);
+      const [loading, setLoading] = useState(true);
+
+      const [activeModal, setActiveModal] = useState(null);
+      const [modalCustomer, setModalCustomer] = useState('');
+
+      useEffect(() => {
+        const unsubLogs = db.collection('logs').orderBy('createdAt', 'desc').onSnapshot((snapshot) => {
+          const items = [];
+          snapshot.forEach((doc) => items.push({ id: doc.id, ...doc.data() }));
+          setLogs(items);
+          setLoading(false);
+        }, (err) => console.error("Firestore logs error:", err));
+
+        const unsubCust = db.collection('customers').orderBy('name', 'asc').onSnapshot((snapshot) => {
+          const items = [];
+          snapshot.forEach((doc) => items.push({ id: doc.id, ...doc.data() }));
+          setCustomers(items);
+        }, (err) => console.error("Firestore customers error:", err));
+
+        return () => {
+          unsubLogs();
+          unsubCust();
+        };
+      }, []);
+
+      const openModal = (type, custName = '') => {
+        setModalCustomer(custName);
+        setActiveModal(type);
+      };
+
+      const handleAddLog = async (newLog) => {
+        try {
+          await db.collection('logs').add({
+            ...newLog,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          setActiveModal(null);
+        } catch (e) {
+          alert('Error saving log: ' + e.message);
+        }
+      };
+
+      const handleAddCustomer = async (newCust) => {
+        try {
+          await db.collection('customers').add({
+            ...newCust,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        } catch (e) {
+          alert('Error saving customer: ' + e.message);
+        }
+      };
+
+      return (
+        <div className="min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">
+          <header className="sticky top-0 z-30 bg-[#F8FAF8]/95 backdrop-blur-md border-b border-[#E0E7E1] px-4 py-3">
+            <div className="max-w-7xl mx-auto flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <BrandLogo />
+                <div>
+                  <h1 className="text-base sm:text-lg font-bold tracking-tight text-[#1B2A22] leading-tight">Shri Jagdamba Ind.</h1>
+                  <p className="text-[11px] text-[#52796F] font-medium leading-none flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse inline-block"></span>
+                    Live Cloud Sync
+                  </p>
+                </div>
+              </div>
+              <div className="hidden sm:flex items-center gap-2">
+                <button onClick={() => openModal('seed')} className="bg-[#2D6A4F] hover:bg-[#204E3A] text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition">
+                  <i className="fa-solid fa-plus mr-1"></i> Add Raw Seed
+                </button>
+                <button onClick={() => openModal('order')} className="bg-[#40916C] hover:bg-[#2D6A4F] text-white px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm transition">
+                  <i className="fa-solid fa-cart-plus mr-1"></i> New Order
+                </button>
+              </div>
+            </div>
+          </header>
+
+          <main className="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
+            {loading ? (
+              <div className="py-20 text-center text-gray-500">
+                <i className="fa-solid fa-circle-notch fa-spin text-3xl text-[#2D6A4F] mb-3"></i>
+                <p className="text-xs font-semibold">Connecting to live cloud database...</p>
+              </div>
+            ) : (
+              <>
+                {tab === 'dashboard' && (
+                  <DashboardSection logs={logs} customers={customers} openModal={openModal} />
+                )}
+                {tab === 'records' && (
+                  <RecordsSection logs={logs} openModal={openModal} />
+                )}
+                {tab === 'customers' && (
+                  <CustomersSection customers={customers} logs={logs} onAddCustomer={handleAddCustomer} openModal={openModal} />
+                )}
+              </>
+            )}
+          </main>
+
+          <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E0E7E1] px-6 py-2 flex justify-around items-center md:hidden">
+            <button onClick={() => setTab('dashboard')} className={`flex flex-col items-center gap-1 ${tab === 'dashboard' ? 'text-[#2D6A4F] font-bold' : 'text-gray-400'}`}>
+              <i className="fa-solid fa-chart-pie text-lg"></i>
+              <span className="text-[10px]">Dashboard</span>
+            </button>
+            <button onClick={() => setTab('records')} className={`flex flex-col items-center gap-1 ${tab === 'records' ? 'text-[#2D6A4F] font-bold' : 'text-gray-400'}`}>
+              <i className="fa-solid fa-list-check text-lg"></i>
+              <span className="text-[10px]">Records</span>
+            </button>
+            <button onClick={() => setTab('customers')} className={`flex flex-col items-center gap-1 ${tab === 'customers' ? 'text-[#2D6A4F] font-bold' : 'text-gray-400'}`}>
+              <i className="fa-solid fa-users text-lg"></i>
+              <span className="text-[10px]">Buyers</span>
+            </button>
+          </nav>
+
+          <div className="hidden md:flex justify-center gap-4 fixed bottom-6 left-1/2 -translate-x-1/2 bg-white px-4 py-2 rounded-full shadow-lg border border-[#E0E7E1] z-40">
+            <button onClick={() => setTab('dashboard')} className={`px-4 py-1.5 rounded-full text-xs font-bold transition ${tab === 'dashboard' ? 'bg-[#2D6A4F] text-white' : 'text-gray-600 hover:bg-gray-100'}`}>Dashboard</button>
+            <button onClick={() => setTab('records')} className={`px-4 py-1.5 rounded-full text-xs font-bold transition ${tab === 'records' ? 'bg-[#2D6A4F] text-white' : 'text-gray-600 hover:bg-gray-100'}`}>Daily Records</button>
+            <button onClick={() => setTab('customers')} className={`px-4 py-1.5 rounded-full text-xs font-bold transition ${tab === 'customers' ? 'bg-[#2D6A4F] text-white' : 'text-gray-600 hover:bg-gray-100'}`}>Customer Directory</button>
+          </div>
+
+          {activeModal && (
+            <ModalWrapper onClose={() => setActiveModal(null)}>
+              {activeModal === 'seed' && <SeedModal onAdd={handleAddLog} onClose={() => setActiveModal(null)} />}
+              {activeModal === 'crush' && <CrushModal onAdd={handleAddLog} onClose={() => setActiveModal(null)} />}
+              {activeModal === 'order' && <OrderModal customers={customers} defaultCust={modalCustomer} onAdd={handleAddLog} onAddCust={handleAddCustomer} onClose={() => setActiveModal(null)} />}
+              {activeModal === 'payment' && <PaymentModal customers={customers} defaultCust={modalCustomer} onAdd={handleAddLog} onClose={() => setActiveModal(null)} />}
+            </ModalWrapper>
+          )}
+        </div>
+      );
+    }
+
+    function DashboardSection({ logs, customers, openModal }) {
+      const seedStock = SEED_TYPES.reduce((acc, s) => {
+        const added = logs.filter(l => l.type === 'seed' && l.seedId === s.id).reduce((sum, l) => sum + Number(l.quantity || 0), 0);
+        const crushed = logs.filter(l => l.type === 'crush' && l.seedId === s.id).reduce((sum, l) => sum + Number(l.quantity || 0), 0);
+        acc[s.id] = Math.max(0, added - crushed);
+        return acc;
+      }, {});
+
+      const totalRevenue = logs.filter(l => l.type === 'order').reduce((sum, l) => sum + Number(l.totalAmount || 0), 0);
+      const totalCollected = logs.filter(l => l.type === 'payment').reduce((sum, l) => sum + Number(l.amount || 0), 0);
+      const totalPending = totalRevenue - totalCollected;
+
+      return (
+        <div className="space-y-4">
+          <div className="bg-white p-4 rounded-2xl border border-[#E0E7E1] shadow-sm">
+            <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2.5">Fast Entry Actions</p>
+            <div className="grid grid-cols-2 gap-2">
+              <button onClick={() => openModal('seed')} className="p-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-xs font-bold text-left transition flex items-center gap-2">
+                <i className="fa-solid fa-plus text-amber-700"></i> Seed Stock Arrival
+              </button>
+              <button onClick={() => openModal('crush')} className="p-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 text-xs font-bold text-left transition flex items-center gap-2">
+                <i className="fa-solid fa-gears text-emerald-700"></i> Daily Crushing Log
+              </button>
+              <button onClick={() => openModal('order')} className="p-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 text-xs font-bold text-left transition flex items-center gap-2">
+                <i className="fa-solid fa-cart-plus text-blue-700"></i> New Order Sale
+              </button>
+              <button onClick={() => openModal('payment')} className="p-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 text-xs font-bold text-left transition flex items-center gap-2">
+                <i className="fa-solid fa-indian-rupee-sign text-purple-700"></i> Payment Received
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div className="bg-white p-3.5 rounded-2xl border border-[#E0E7E1] shadow-sm">
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Total Sales</p>
+              <h3 className="text-base sm:text-xl font-black text-[#1B2A22] mt-0.5 truncate">₹{totalRevenue.toLocaleString()}</h3>
+            </div>
+            <div className="bg-white p-3.5 rounded-2xl border border-[#E0E7E1] shadow-sm">
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Collected</p>
+              <h3 className="text-base sm:text-xl font-black text-[#2D6A4F] mt-0.5 truncate">₹{totalCollected.toLocaleString()}</h3>
+            </div>
+            <div className="bg-white p-3.5 rounded-2xl border border-[#E0E7E1] shadow-sm col-span-2 sm:col-span-1">
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Receivables</p>
+              <h3 className="text-base sm:text-xl font-black text-[#E63946] mt-0.5 truncate">₹{totalPending.toLocaleString()}</h3>
+            </div>
+          </div>
+
+          <div className="bg-white p-4 rounded-2xl border border-[#E0E7E1] shadow-sm">
+            <h3 className="text-xs font-bold text-[#1B2A22] mb-3 flex items-center gap-2">
+              <i className="fa-solid fa-warehouse text-[#2D6A4F]"></i> Current Raw Seed Inventory
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
+              {SEED_TYPES.map(seed => (
+                <div key={seed.id} className="p-2.5 rounded-xl bg-[#F8FAF8] border border-[#EAEFEA] text-center">
+                  <p className="text-[11px] font-medium text-gray-600 truncate">{seed.name}</p>
+                  <p className="text-sm font-extrabold text-[#1B2A22] mt-0.5">
+                    {seedStock[seed.id] || 0} <span className="text-[10px] font-normal text-gray-500">MT</span>
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    function RecordsSection({ logs, openModal }) {
+      return (
+        <div className="bg-white rounded-2xl border border-[#E0E7E1] shadow-sm overflow-hidden w-full">
+          <div className="p-3.5 border-b border-[#E0E7E1] flex justify-between items-center">
+            <h3 className="font-bold text-xs sm:text-sm text-[#1B2A22]">Daily Operational Logs</h3>
+            <button onClick={() => openModal('order')} className="text-xs bg-[#2D6A4F] text-white font-semibold px-2.5 py-1 rounded-lg">
+              + New Order
+            </button>
+          </div>
+          <div className="overflow-x-auto custom-scrollbar w-full">
+            {logs.length === 0 ? (
+              <div className="py-10 text-center text-gray-400">
+                <i className="fa-solid fa-clipboard-list text-2xl mb-2"></i>
+                <p className="text-xs">No records added yet.</p>
+              </div>
+            ) : (
+              <table className="w-full text-left text-xs min-w-[500px]">
+                <thead className="bg-[#F8FAF8] text-gray-600 uppercase font-semibold border-b border-[#E0E7E1]">
+                  <tr>
+                    <th className="p-2.5">Date</th>
+                    <th className="p-2.5">Type</th>
+                    <th className="p-2.5">Details</th>
+                    <th className="p-2.5">Qty</th>
+                    <th className="p-2.5 text-right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#E0E7E1]">
+                  {logs.map((log) => (
+                    <tr key={log.id} className="hover:bg-gray-50">
+                      <td className="p-2.5 whitespace-nowrap text-gray-500">{log.date}</td>
+                      <td className="p-2.5 whitespace-nowrap">
+                        <span className={`px-1.5 py-0.5 rounded font-bold uppercase text-[9px] ${
+                          log.type === 'order' ? 'bg-blue-100 text-blue-800' :
+                          log.type === 'payment' ? 'bg-green-100 text-green-800' :
+                          log.type === 'seed' ? 'bg-amber-100 text-amber-800' : 'bg-purple-100 text-purple-800'
+                        }`}>
+                          {log.type}
+                        </span>
+                      </td>
+                      <td className="p-2.5 truncate max-w-[180px]">{log.details || log.product || log.customer || '-'}</td>
+                      <td className="p-2.5 whitespace-nowrap">{log.quantity ? `${log.quantity} ${log.unit || ''}` : '-'}</td>
+                      <td className="p-2.5 text-right font-bold whitespace-nowrap">{log.amount || log.totalAmount ? `₹${Number(log.amount || log.totalAmount).toLocaleString()}` : '-'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    function CustomersSection({ customers, logs, onAddCustomer, openModal }) {
+      const [name, setName] = useState('');
+      const [phone, setPhone] = useState('');
+      const [city, setCity] = useState('');
+
+      const handleCreate = (e) => {
+        e.preventDefault();
+        if (!name.trim()) return;
+        onAddCustomer({ name: name.trim(), phone: phone.trim(), city: city.trim() });
+        setName('');
+        setPhone('');
+        setCity('');
+      };
+
+      return (
+        <div className="space-y-4">
+          <div className="bg-white p-4 rounded-2xl border border-[#E0E7E1] shadow-sm">
+            <h3 className="text-xs font-bold text-[#1B2A22] mb-2.5">Add Customer</h3>
+            <form onSubmit={handleCreate} className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+              <input type="text" placeholder="Customer Name *" value={name} onChange={e => setName(e.target.value)} required className="p-2 text-xs rounded-xl border border-gray-300 focus:outline-[#2D6A4F]" />
+              <input type="tel" placeholder="Phone Number" value={phone} onChange={e => setPhone(e.target.value)} className="p-2 text-xs rounded-xl border border-gray-300 focus:outline-[#2D6A4F]" />
+              <input type="text" placeholder="City / Area" value={city} onChange={e => setCity(e.target.value)} className="p-2 text-xs rounded-xl border border-gray-300 focus:outline-[#2D6A4F]" />
+              <button type="submit" className="bg-[#2D6A4F] hover:bg-[#204E3A] text-white text-xs font-bold py-2 px-3 rounded-xl transition">
+                + Register
+              </button>
+            </form>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {customers.map(c => {
+              const orders = logs.filter(l => l.type === 'order' && l.customer === c.name);
+              const totalBilled = orders.reduce((s, o) => s + Number(o.totalAmount || 0), 0);
+              const totalPaid = logs.filter(l => l.type === 'payment' && l.customer === c.name).reduce((s, p) => s + Number(p.amount || 0), 0);
+              const due = totalBilled - totalPaid;
+
+              return (
+                <div key={c.id} className="bg-white p-3.5 rounded-2xl border border-[#E0E7E1] shadow-sm flex flex-col justify-between">
+                  <div>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="font-bold text-[#1B2A22] text-xs">{c.name}</h4>
+                        <p className="text-[11px] text-gray-500">{c.city || 'Local'} • {c.phone || '-'}</p>
+                      </div>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-md font-bold ${due > 0 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                        {due > 0 ? `Due: ₹${due.toLocaleString()}` : 'Cleared'}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 mt-3 pt-2.5 border-t border-[#F0F4F1]">
+                    <button onClick={() => openModal('order', c.name)} className="flex-1 bg-[#2D6A4F] text-white py-1 rounded-lg text-xs font-semibold">Order</button>
+                    <button onClick={() => openModal('payment', c.name)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 py-1 rounded-lg text-xs font-semibold">Payment</button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    function ModalWrapper({ children, onClose }) {
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={onClose}>
+          <div className="bg-white w-full max-w-lg rounded-2xl shadow-xl overflow-hidden" onClick={e => e.stopPropagation()}>
+            {children}
+          </div>
+        </div>
+      );
+    }
+
+    function SeedModal({ onAdd, onClose }) {
+      const [seedId, setSeedId] = useState('groundnut');
+      const [quantity, setQuantity] = useState('');
+      const [rate, setRate] = useState('');
+      const [supplier, setSupplier] = useState('');
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        const seed = SEED_TYPES.find(s => s.id === seedId);
+        onAdd({
+          type: 'seed',
+          seedId,
+          details: `Inward: ${seed.name} from ${supplier || 'Market'}`,
+          quantity: Number(quantity),
+          unit: 'MT',
+          rate: Number(rate) || 0,
+          amount: Number(quantity) * (Number(rate) || 0),
+          date: new Date().toISOString().split('T')[0]
+        });
+      };
+
+      return (
+        <form onSubmit={handleSubmit} className="p-4 space-y-3">
+          <div className="flex justify-between items-center border-b pb-2">
+            <h3 className="font-bold text-xs text-[#1B2A22]">Add Raw Seed Stock</h3>
+            <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600"><i className="fa-solid fa-xmark"></i></button>
+          </div>
+          <div className="space-y-2.5">
+            <div>
+              <label className="text-[11px] font-semibold text-gray-600 block mb-1">Seed Variety</label>
+              <select value={seedId} onChange={e => setSeedId(e.target.value)} className="w-full p-2 text-xs rounded-xl border border-gray-300">
+                {SEED_TYPES.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+              </select>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-[11px] font-semibold text-gray-600 block mb-1">Qty (MT)</label>
+                <input type="number" step="0.01" value={quantity} onChange={e => setQuantity(e.target.value)} required placeholder="e.g. 10" className="w-full p-2 text-xs rounded-xl border border-gray-300" />
+              </div>
+              <div>
+                <label className="text-[11px] font-semibold text-gray-600 block mb-1">Rate / MT (₹)</label>
+                <input type="number" value={rate} onChange={e => setRate(e.target.value)} placeholder="e.g. 65000" className="w-full p-2 text-xs rounded-xl border border-gray-300" />
+              </div>
+            </div>
+            <div>
+              <label className="text-[11px] font-semibold text-gray-600 block mb-1">Supplier / Mandi</label>
+              <input type="text" value={supplier} onChange={e => setSupplier(e.target.value)} placeholder="Supplier Name" className="w-full p-2 text-xs rounded-xl border border-gray-300" />
+            </div>
+          </div>
+          <div className="flex gap-2 pt-2">
+            <button type="button" onClick={onClose} className="flex-1 py-1.5 rounded-xl text-xs font-semibold bg-gray-100 text-gray-700">Cancel</button>
+            <button type="submit" className="flex-1 py-1.5 rounded-xl text-xs font-semibold bg-[#2D6A4F] text-white">Save Inward</button>
+          </div>
+        </form>
+      );
+    }
+
+    function CrushModal({ onAdd, onClose }) {
+      const [seedId, setSeedId] = useState('groundnut');
+      const [quantity, setQuantity] = useState('');
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        const seed = SEED_TYPES.find(s => s.id === seedId);
+        const qty = Number(quantity);
+        const oilProduced = (qty * (seed.yieldOil / 100)).toFixed(2);
+        const cakeProduced = (qty * (seed.yieldCake / 100)).toFixed(2);
+
+        onAdd({
+          type: 'crush',
+          seedId,
+          details: `Crushed ${qty} MT ${seed.name} (Yield: ~${oilProduced} MT Oil, ~${cakeProduced} MT Cake)`,
+          quantity: qty,
+          unit: 'MT',
+          date: new Date().toISOString().split('T')[0]
+        });
+      };
+
+      return (
+        <form onSubmit={handleSubmit} className="p-4 space-y-3">
+          <div className="flex justify-between items-center border-b pb-2">
+            <h3 className="font-bold text-xs text-[#1B2A22]">Log Crushing Batch</h3>
+            <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600"><i className="fa-solid fa-xmark"></i></button>
+          </div>
+          <div className="space-y-2.5">
+            <div>
+              <label className="text-[11px] font-semibold text-gray-600 block mb-1">Seed Variety</label>
+              <select value={seedId} onChange={e => setSeedId(e.target.value)} className="w-full p-2 text-xs rounded-xl border border-gray-300">
+                {SEED_TYPES.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="text-[11px] font-semibold text-gray-600 block mb-1">Qty Crushed (MT)</label>
+              <input type="number" step="0.01" value={quantity} onChange={e => setQuantity(e.target.value)} required placeholder="e.g. 5" className="w-full p-2 text-xs rounded-xl border border-gray-300" />
+            </div>
+          </div>
+          <div className="flex gap-2 pt-2">
+            <button type="button" onClick={onClose} className="flex-1 py-1.5 rounded-xl text-xs font-semibold bg-gray-100 text-gray-700">Cancel</button>
+            <button type="submit" className="flex-1 py-1.5 rounded-xl text-xs font-semibold bg-[#2D6A4F] text-white">Record Crushing</button>
+          </div>
+        </form>
+      );
+    }
+
+    function OrderModal({ customers, defaultCust, onAdd, onAddCust, onClose }) {
+      const [customer, setCustomer] = useState(defaultCust || (customers[0] ? customers[0].name : ''));
+      const [newCustName, setNewCustName] = useState('');
+      const [product, setProduct] = useState(PRODUCT_OPTIONS[0].items[0]);
+      const [quantity, setQuantity] = useState('');
+      const [unit, setUnit] = useState('Litres (L)');
+      const [rate, setRate] = useState('');
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        let targetCustomer = customer;
+        if (customer === '__NEW__' || !customer) {
+          if (!newCustName.trim()) return;
+          targetCustomer = newCustName.trim();
+          await onAddCust({ name: targetCustomer });
+        }
+
+        const total = Number(quantity) * Number(rate);
+        onAdd({
+          type: 'order',
+          customer: targetCustomer,
+          product,
+          quantity: Number(quantity),
+          unit,
+          rate: Number(rate),
+          totalAmount: total,
+          details: `Order: ${product} (${quantity} ${unit}) for ${targetCustomer}`,
+          date: new Date().toISOString().split('T')[0]
+        });
+      };
+
+      return (
+        <form onSubmit={handleSubmit} className="p-4 space-y-3 max-h-[85vh] overflow-y-auto">
+          <div className="flex justify-between items-center border-b pb-2">
+            <h3 className="font-bold text-xs text-[#1B2A22]">Create Sales Order</h3>
+            <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600"><i className="fa-solid fa-xmark"></i></button>
+          </div>
+          <div className="space-y-2.5">
+            <div>
+              <label className="text-[11px] font-semibold text-gray-600 block mb-1">Customer</label>
+              <select value={customer} onChange={e => setCustomer(e.target.value)} className="w-full p-2 text-xs rounded-xl border border-gray-300 mb-2">
+                {customers.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                <option value="__NEW__">➕ Add New Customer...</option>
+              </select>
+              {(customer === '__NEW__' || customers.length === 0) && (
+                <input type="text" placeholder="New Customer Name" value={newCustName} onChange={e => setNewCustName(e.target.value)} required className="w-full p-2 text-xs rounded-xl border border-[#2D6A4F]" />
+              )}
+            </div>
+            <div>
+              <label className="text-[11px] font-semibold text-gray-600 block mb-1">Product</label>
+              <select value={product} onChange={e => setProduct(e.target.value)} className="w-full p-2 text-xs rounded-xl border border-gray-300">
+                {PRODUCT_OPTIONS.map(group => (
+                  <optgroup key={group.group} label={group.group}>
+                    {group.items.map(item => <option key={item} value={item}>{item}</option>)}
+                  </optgroup>
+                ))}
+              </select>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-[11px] font-semibold text-gray-600 block mb-1">Qty</label>
+                <input type="number" step="any" value={quantity} onChange={e => setQuantity(e.target.value)} required placeholder="e.g. 50" className="w-full p-2 text-xs rounded-xl border border-gray-300" />
+              </div>
+              <div>
+                <label className="text-[11px] font-semibold text-gray-600 block mb-1">Unit</label>
+                <select value={unit} onChange={e => setUnit(e.target.value)} className="w-full p-2 text-xs rounded-xl border border-gray-300">
+                  <option value="Litres (L)">Litres (L)</option>
+                  <option value="Bottles">Bottles</option>
+                  <option value="Bags (50Kg)">Bags (50Kg)</option>
+                  <option value="Bags (25Kg)">Bags (25Kg)</option>
+                  <option value="Metric Tons">Metric Tons</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label className="text-[11px] font-semibold text-gray-600 block mb-1">Rate (₹)</label>
+              <input type="number" step="any" value={rate} onChange={e => setRate(e.target.value)} required placeholder="e.g. 175" className="w-full p-2 text-xs rounded-xl border border-gray-300" />
+            </div>
+          </div>
+          <div className="flex gap-2 pt-2">
+            <button type="button" onClick={onClose} className="flex-1 py-1.5 rounded-xl text-xs font-semibold bg-gray-100 text-gray-700">Cancel</button>
+            <button type="submit" className="flex-1 py-1.5 rounded-xl text-xs font-semibold bg-[#2D6A4F] text-white">Save Order</button>
+          </div>
+        </form>
+      );
+    }
+
+    function PaymentModal({ customers, defaultCust, onAdd, onClose }) {
+      const [customer, setCustomer] = useState(defaultCust || (customers[0] ? customers[0].name : ''));
+      const [amount, setAmount] = useState('');
+      const [mode, setMode] = useState('Bank Transfer / UPI');
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        onAdd({
+          type: 'payment',
+          customer,
+          amount: Number(amount),
+          details: `Payment from ${customer} via ${mode}`,
+          date: new Date().toISOString().split('T')[0]
+        });
+      };
+
+      return (
+        <form onSubmit={handleSubmit} className="p-4 space-y-3">
+          <div className="flex justify-between items-center border-b pb-2">
+            <h3 className="font-bold text-xs text-[#1B2A22]">Log Payment Received</h3>
+            <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600"><i className="fa-solid fa-xmark"></i></button>
+          </div>
+          <div className="space-y-2.5">
+            <div>
+              <label className="text-[11px] font-semibold text-gray-600 block mb-1">Customer</label>
+              <select value={customer} onChange={e => setCustomer(e.target.value)} required className="w-full p-2 text-xs rounded-xl border border-gray-300">
+                {customers.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="text-[11px] font-semibold text-gray-600 block mb-1">Amount (₹)</label>
+              <input type="number" value={amount} onChange={e => setAmount(e.target.value)} required placeholder="e.g. 25000" className="w-full p-2 text-xs rounded-xl border border-gray-300" />
+            </div>
+            <div>
+              <label className="text-[11px] font-semibold text-gray-600 block mb-1">Method</label>
+              <select value={mode} onChange={e => setMode(e.target.value)} className="w-full p-2 text-xs rounded-xl border border-gray-300">
+                <option value="Bank Transfer / UPI">Bank Transfer / UPI</option>
+                <option value="Cash">Cash</option>
+                <option value="Cheque">Cheque</option>
+              </select>
+            </div>
+          </div>
+          <div className="flex gap-2 pt-2">
+            <button type="button" onClick={onClose} className="flex-1 py-1.5 rounded-xl text-xs font-semibold bg-gray-100 text-gray-700">Cancel</button>
+            <button type="submit" className="flex-1 py-1.5 rounded-xl text-xs font-semibold bg-[#2D6A4F] text-white">Save</button>
+          </div>
+        </form>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
