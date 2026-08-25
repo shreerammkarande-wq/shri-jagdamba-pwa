@@ -1,0 +1,1862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Shri Jagdamba Industry - Daily Monitor</title>
+  <meta name="theme-color" content="#FFFFFF" />
+  <link rel="manifest" href="/manifest.json" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- SheetJS for clean Excel exports -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- html2pdf.js for mobile PDF download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <!-- Chart.js for Interactive Inventory Pie Charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Firebase Compat SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    html, body { 
+      max-width: 100vw; 
+      overflow-x: hidden; 
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      letter-spacing: -0.015em;
+    }
+    body {
+      background-color: #FA8072;
+      color: #1A1A1A;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #FFE4E1; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #C0392B; border-radius: 4px; }
+
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #receipt-card, #receipt-card * {
+        visibility: visible;
+      }
+      #receipt-card {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 16px;
+        background: white !important;
+        color: black !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-[#FA8072] text-[#1A1A1A] pb-24 md:pb-8">
+
+  <!-- Single Official Header Card (White Card with Logo, Name & Live Cloud Sync) -->
+  <header class="sticky top-0 z-30 bg-white border-b border-rose-200 px-4 py-3 shadow-md">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <!-- Brand Logo Icon -->
+        <img 
+          src="sjiicon.png" 
+          alt="Shri Jagdamba Industry" 
+          class="h-10 w-10 object-contain flex-shrink-0"
+          onerror="this.src='https://raw.githubusercontent.com/ShreeramKarande/Shri-Jagdamba-Industry/main/sjiicon.png'"
+        />
+        <div>
+          <h1 class="text-base sm:text-lg font-black tracking-tight text-[#1A1A1A] leading-tight">Shri Jagdamba Ind.</h1>
+          <p id="cloud-status" class="text-[11px] text-[#C0392B] font-bold leading-none flex items-center gap-1.5 mt-0.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#C0392B] animate-pulse"></span>
+            Live Cloud Sync
+          </p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
+    
+    <!-- Tab Views -->
+    <div id="view-dashboard" class="space-y-4">
+      <!-- Quick Actions -->
+      <div class="bg-white p-4 rounded-2xl border border-rose-100 shadow-xl">
+        <p class="text-[11px] font-extrabold text-[#C0392B] uppercase tracking-wider mb-2.5">Fast Entry Actions</p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+          <button onclick="openModal('seed')" class="p-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-950 border border-rose-200 text-xs font-bold text-left transition flex items-center gap-2">
+            <i class="fa-solid fa-plus text-[#C0392B]"></i> Seed Stock Arrival
+          </button>
+          <button onclick="openModal('oil_arrival')" class="p-2.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-950 border border-orange-200 text-xs font-bold text-left transition flex items-center gap-2">
+            <i class="fa-solid fa-oil-can text-orange-700"></i> Ready Oil Arrival
+          </button>
+          <button onclick="openModal('crush')" class="p-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-950 border border-amber-200 text-xs font-bold text-left transition flex items-center gap-2">
+            <i class="fa-solid fa-gears text-amber-700"></i> Daily Crushing Log
+          </button>
+          <button onclick="openModal('order')" class="p-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-950 border border-red-200 text-xs font-bold text-left transition flex items-center gap-2">
+            <i class="fa-solid fa-cart-plus text-[#C0392B]"></i> New Order Sale
+          </button>
+          <button onclick="openModal('payment')" class="p-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-950 border border-rose-200 text-xs font-bold text-left transition flex items-center gap-2 col-span-2 sm:col-span-1">
+            <i class="fa-solid fa-indian-rupee-sign text-[#C0392B]"></i> Payment Received
+          </button>
+        </div>
+      </div>
+
+      <!-- Dashboard Scope Filter -->
+      <div class="bg-white p-3.5 rounded-2xl border border-rose-100 shadow-xl space-y-2.5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-100 pb-2.5">
+          <p class="text-[11px] font-extrabold text-[#C0392B] uppercase tracking-wider flex items-center gap-1.5">
+            <i class="fa-solid fa-chart-line text-[#C0392B]"></i> Performance Timeline
+          </p>
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <button onclick="setDashScope('all')" id="btn-dash-all" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-[#C0392B] text-white">All Time</button>
+            <button onclick="setDashScope('date')" id="btn-dash-date" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-gray-100 text-gray-700">Day</button>
+            <button onclick="setDashScope('month')" id="btn-dash-month" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-gray-100 text-gray-700">Month</button>
+            <button onclick="setDashScope('year')" id="btn-dash-year" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-gray-100 text-gray-700">Year</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 items-center">
+          <div id="dash-date-box" class="hidden">
+            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-0.5">Select Day</label>
+            <input id="dash-date-val" type="date" onchange="renderAll()" class="w-full p-2 text-xs rounded-xl border border-gray-300 focus:outline-[#C0392B]" />
+          </div>
+
+          <div id="dash-month-box" class="hidden">
+            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-0.5">Select Month</label>
+            <input id="dash-month-val" type="month" onchange="renderAll()" class="w-full p-2 text-xs rounded-xl border border-gray-300 focus:outline-[#C0392B]" />
+          </div>
+
+          <div id="dash-year-box" class="hidden">
+            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-0.5">Select Year</label>
+            <select id="dash-year-val" onchange="renderAll()" class="w-full p-2 text-xs rounded-xl border border-gray-300 bg-white">
+              <option value="2027">2027</option>
+              <option value="2026" selected>2026</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+            </select>
+          </div>
+
+          <div class="sm:col-span-2 flex items-center justify-end">
+            <span id="dash-filter-summary" class="text-xs font-bold text-[#C0392B] bg-rose-50 border border-rose-200 px-3 py-1.5 rounded-xl w-full sm:w-auto text-center sm:text-right">
+              Showing All Time Data
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Financial Summary Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="bg-white p-3.5 rounded-2xl border border-rose-100 shadow-xl">
+          <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Total Sales</p>
+          <h3 id="stat-sales" class="text-base sm:text-lg font-black text-[#1A1A1A] mt-0.5 truncate">₹0</h3>
+        </div>
+        <div class="bg-white p-3.5 rounded-2xl border border-rose-100 shadow-xl">
+          <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Receivables</p>
+          <h3 id="stat-due" class="text-base sm:text-lg font-black text-[#C0392B] mt-0.5 truncate">₹0</h3>
+        </div>
+        <div class="bg-white p-3.5 rounded-2xl border border-rose-100 shadow-xl">
+          <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Total Oil Extracted</p>
+          <h3 id="stat-oil" class="text-base sm:text-lg font-black text-[#C0392B] mt-0.5 truncate">0 <span class="text-[10px] font-normal text-gray-500">Ltr</span></h3>
+        </div>
+        <div class="bg-white p-3.5 rounded-2xl border border-rose-100 shadow-xl">
+          <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Total Cake Produced</p>
+          <h3 id="stat-cake" class="text-base sm:text-lg font-black text-amber-800 mt-0.5 truncate">0 <span class="text-[10px] font-normal text-gray-500">Kg</span></h3>
+        </div>
+      </div>
+
+      <!-- Raw Seed Inventory with Pie Chart -->
+      <div class="bg-white p-4 rounded-2xl border border-rose-100 shadow-xl space-y-3">
+        <div class="flex justify-between items-center border-b border-gray-100 pb-2">
+          <h3 class="text-xs font-black text-[#1A1A1A] flex items-center gap-2">
+            <i class="fa-solid fa-warehouse text-[#C0392B]"></i> Raw Seed Inventory (Kg)
+          </h3>
+          <span id="total-seed-badge" class="text-[11px] font-black text-[#C0392B] bg-rose-50 px-2.5 py-0.5 rounded-lg border border-rose-200">Total: 0 Kg</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+          <div class="md:col-span-4 flex flex-col items-center justify-center p-2 bg-rose-50/40 rounded-xl border border-rose-100">
+            <div class="w-40 h-40 relative">
+              <canvas id="chart-seed-pie"></canvas>
+            </div>
+          </div>
+          <div class="md:col-span-8">
+            <div id="grid-seed-inv" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Oil Inventory with Pie Chart -->
+      <div class="bg-white p-4 rounded-2xl border border-rose-100 shadow-xl space-y-3">
+        <div class="flex justify-between items-center border-b border-gray-100 pb-2">
+          <h3 class="text-xs font-black text-[#1A1A1A] flex items-center gap-2">
+            <i class="fa-solid fa-oil-can text-orange-700"></i> Oil Inventory (Ltr)
+          </h3>
+          <span id="total-oil-badge" class="text-[11px] font-black text-orange-700 bg-orange-50 px-2.5 py-0.5 rounded-lg border border-orange-200">Total: 0 Ltr</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+          <div class="md:col-span-4 flex flex-col items-center justify-center p-2 bg-orange-50/40 rounded-xl border border-orange-100">
+            <div class="w-40 h-40 relative">
+              <canvas id="chart-oil-pie"></canvas>
+            </div>
+          </div>
+          <div class="md:col-span-8">
+            <div id="grid-oil-inv" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cake Inventory with Pie Chart -->
+      <div class="bg-white p-4 rounded-2xl border border-rose-100 shadow-xl space-y-3">
+        <div class="flex justify-between items-center border-b border-gray-100 pb-2">
+          <h3 class="text-xs font-black text-[#1A1A1A] flex items-center gap-2">
+            <i class="fa-solid fa-boxes-stacked text-amber-800"></i> Oil Cake Inventory (Kg)
+          </h3>
+          <span id="total-cake-badge" class="text-[11px] font-black text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-lg border border-amber-200">Total: 0 Kg</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+          <div class="md:col-span-4 flex flex-col items-center justify-center p-2 bg-amber-50/40 rounded-xl border border-amber-100">
+            <div class="w-40 h-40 relative">
+              <canvas id="chart-cake-pie"></canvas>
+            </div>
+          </div>
+          <div class="md:col-span-8">
+            <div id="grid-cake-inv" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daily Records Tab with Delivery Status, Receipt Generator & Filters -->
+    <div id="view-records" class="hidden space-y-3">
+      <div class="bg-white p-4 rounded-2xl border border-rose-100 shadow-xl space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-gray-100 pb-3">
+          <h3 class="font-black text-xs sm:text-sm text-[#1A1A1A] flex items-center gap-1.5">
+            <i class="fa-solid fa-calendar-days text-[#C0392B]"></i> Filter Operational Records
+          </h3>
+          <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="exportRecordsToExcel()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#C0392B] hover:bg-[#A93226] text-white flex items-center gap-1.5 shadow-sm transition">
+              <i class="fa-solid fa-file-excel text-sm"></i> Export to Excel
+            </button>
+            <div class="flex items-center gap-1">
+              <button onclick="setFilterScope('all')" id="btn-scope-all" class="px-3 py-1 rounded-lg text-xs font-bold bg-[#C0392B] text-white">All Time</button>
+              <button onclick="setFilterScope('date')" id="btn-scope-date" class="px-3 py-1 rounded-lg text-xs font-bold bg-gray-100 text-gray-700">Date</button>
+              <button onclick="setFilterScope('month')" id="btn-scope-month" class="px-3 py-1 rounded-lg text-xs font-bold bg-gray-100 text-gray-700">Month</button>
+              <button onclick="setFilterScope('year')" id="btn-scope-year" class="px-3 py-1 rounded-lg text-xs font-bold bg-gray-100 text-gray-700">Year</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 pt-1">
+          <div id="filter-date-box" class="hidden">
+            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Select Date</label>
+            <input id="filter-date-val" type="date" onchange="renderFilteredRecords()" class="w-full p-2 text-xs rounded-xl border border-gray-300 focus:outline-[#C0392B]" />
+          </div>
+
+          <div id="filter-month-box" class="hidden">
+            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Select Month</label>
+            <input id="filter-month-val" type="month" onchange="renderFilteredRecords()" class="w-full p-2 text-xs rounded-xl border border-gray-300 focus:outline-[#C0392B]" />
+          </div>
+
+          <div id="filter-year-box" class="hidden">
+            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Select Year</label>
+            <select id="filter-year-val" onchange="renderFilteredRecords()" class="w-full p-2 text-xs rounded-xl border border-gray-300 bg-white">
+              <option value="2027">2027</option>
+              <option value="2026" selected>2026</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Record Type</label>
+            <select id="filter-type-val" onchange="renderFilteredRecords()" class="w-full p-2 text-xs rounded-xl border border-gray-300 bg-white">
+              <option value="ALL">All Categories</option>
+              <option value="order">Sales Orders</option>
+              <option value="crush">Crushing Logs</option>
+              <option value="seed">Seed Stock Inward</option>
+              <option value="oil_arrival">Ready Oil Arrival</option>
+              <option value="payment">Payments Received</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">Delivery Status</label>
+            <select id="filter-delivery-val" onchange="renderFilteredRecords()" class="w-full p-2 text-xs rounded-xl border border-gray-300 bg-white">
+              <option value="ALL">All Status</option>
+              <option value="PENDING">Pending Delivery</option>
+              <option value="DELIVERED">Delivered</option>
+            </select>
+          </div>
+
+          <div class="sm:col-span-2 flex items-center justify-end">
+            <span id="filtered-stats-label" class="text-xs font-extrabold text-[#C0392B] bg-rose-50 border border-rose-200 px-3 py-2 rounded-xl w-full sm:w-auto text-center sm:text-right">
+              Showing All Records
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl border border-rose-100 shadow-xl overflow-hidden w-full">
+        <div class="overflow-x-auto custom-scrollbar w-full">
+          <table class="w-full text-left text-xs min-w-[680px]">
+            <thead class="bg-rose-50/70 text-gray-700 uppercase font-bold border-b border-rose-100">
+              <tr>
+                <th class="p-2.5">Date</th>
+                <th class="p-2.5">Type</th>
+                <th class="p-2.5">Party / Details</th>
+                <th class="p-2.5">Order Items / Output</th>
+                <th class="p-2.5">Delivery Status</th>
+                <th class="p-2.5 text-right">Amount</th>
+                <th class="p-2.5 text-center">Receipt & Actions</th>
+              </tr>
+            </thead>
+            <tbody id="table-logs-body" class="divide-y divide-gray-100 font-medium"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customers Tab -->
+    <div id="view-customers" class="hidden space-y-4">
+      <div class="bg-white p-4 rounded-2xl border border-rose-100 shadow-xl space-y-3">
+        <div class="flex items-center justify-between border-b border-gray-100 pb-2">
+          <h3 class="text-xs font-black text-[#1A1A1A]">Customer Management</h3>
+          <button onclick="exportCustomersToExcel()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#C0392B] hover:bg-[#A93226] text-white flex items-center gap-1.5 shadow-sm transition">
+            <i class="fa-solid fa-file-excel text-sm"></i> Export Directory to Excel
+          </button>
+        </div>
+        <form onsubmit="handleManualCustomer(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2">
+          <input id="new-cust-name" type="text" placeholder="Customer Name *" required class="p-2 text-xs rounded-xl border border-gray-300 focus:outline-[#C0392B]" />
+          <input id="new-cust-phone" type="tel" placeholder="Mobile Number" class="p-2 text-xs rounded-xl border border-gray-300 focus:outline-[#C0392B]" />
+          <input id="new-cust-city" type="text" placeholder="City / Area" class="p-2 text-xs rounded-xl border border-gray-300 focus:outline-[#C0392B]" />
+          <button type="submit" class="bg-[#C0392B] hover:bg-[#A93226] text-white text-xs font-bold py-2 px-3 rounded-xl">+ Register</button>
+        </form>
+      </div>
+      <div id="grid-customers" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-rose-200 px-6 py-2 flex justify-around items-center md:hidden shadow-lg">
+    <button onclick="switchTab('dashboard')" id="nav-dash" class="flex flex-col items-center gap-1 text-[#C0392B] font-bold">
+      <i class="fa-solid fa-chart-pie text-lg"></i><span class="text-[10px]">Dashboard</span>
+    </button>
+    <button onclick="switchTab('records')" id="nav-rec" class="flex flex-col items-center gap-1 text-gray-400">
+      <i class="fa-solid fa-list-check text-lg"></i><span class="text-[10px]">Records</span>
+    </button>
+    <button onclick="switchTab('customers')" id="nav-cust" class="flex flex-col items-center gap-1 text-gray-400">
+      <i class="fa-solid fa-users text-lg"></i><span class="text-[10px]">Buyers</span>
+    </button>
+  </nav>
+
+  <!-- Desktop Bottom Navigation Pill -->
+  <div class="hidden md:flex justify-center gap-4 fixed bottom-6 left-1/2 -translate-x-1/2 bg-white px-4 py-2 rounded-full shadow-2xl border border-rose-200 z-40">
+    <button onclick="switchTab('dashboard')" id="desk-dash" class="px-4 py-1.5 rounded-full text-xs font-bold bg-[#C0392B] text-white">Dashboard</button>
+    <button onclick="switchTab('records')" id="desk-rec" class="px-4 py-1.5 rounded-full text-xs font-bold text-gray-600 hover:bg-rose-50">Daily Records</button>
+    <button onclick="switchTab('customers')" id="desk-cust" class="px-4 py-1.5 rounded-full text-xs font-bold text-gray-600 hover:bg-rose-50">Customer Directory</button>
+  </div>
+
+  <!-- Modal Container -->
+  <div id="modal-container" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onclick="closeModal()">
+    <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden" onclick="event.stopPropagation()" id="modal-body"></div>
+  </div>
+
+  <script>
+    const SEED_TYPES = [
+      { id: 'groundnut', name: 'Groundnut', unit: 'Kg', yieldOil: 42, yieldCake: 56 },
+      { id: 'sunflower', name: 'Sunflower', unit: 'Kg', yieldOil: 38, yieldCake: 60 },
+      { id: 'safflower', name: 'Safflower', unit: 'Kg', yieldOil: 32, yieldCake: 66 },
+      { id: 'sesame', name: 'Sesame', unit: 'Kg', yieldOil: 45, yieldCake: 53 },
+      { id: 'mustard', name: 'Mustard', unit: 'Kg', yieldOil: 35, yieldCake: 63 },
+      { id: 'coconut', name: 'Coconut (Copra)', unit: 'Kg', yieldOil: 62, yieldCake: 36 },
+      { id: 'flaxseed', name: 'Flaxseed', unit: 'Kg', yieldOil: 34, yieldCake: 64 }
+    ];
+
+    const VARIETY_COLORS = [
+      '#C0392B', '#E67E22', '#F39C12', '#27AE60', '#2980B9', '#8E44AD', '#D35400'
+    ];
+
+    const CATALOG_RATES = {
+      'Groundnut Oil (200 ml)': { name: 'Groundnut Oil (200 ml)', retail: 105, wholesale: 95, unit: 'Bottles' },
+      'Groundnut Oil (500 ml)': { name: 'Groundnut Oil (500 ml)', retail: 155, wholesale: 140, unit: 'Bottles' },
+      'Groundnut Oil (1 ltr)': { name: 'Groundnut Oil (1 ltr)', retail: 285, wholesale: 255, unit: 'Bottles' },
+      'Groundnut Oil (5 ltr)': { name: 'Groundnut Oil (5 ltr)', retail: 1350, wholesale: 1250, unit: 'Bottles' },
+      'Groundnut Oil (Loose)': { name: 'Groundnut Oil (Loose)', retail: 260, wholesale: 240, unit: 'Litres (Ltr)' },
+      'Groundnut Cake (Loose)': { name: 'Groundnut Cake (Loose)', retail: 45, wholesale: 40, unit: 'Kg' },
+      'Groundnut Cake (50 Kg Bag)': { name: 'Groundnut Cake (50 Kg Bag)', retail: 2200, wholesale: 2000, unit: 'Bags (50Kg)' },
+
+      'Sunflower Oil (200 ml)': { name: 'Sunflower Oil (200 ml)', retail: 125, wholesale: 115, unit: 'Bottles' },
+      'Sunflower Oil (500 ml)': { name: 'Sunflower Oil (500 ml)', retail: 180, wholesale: 170, unit: 'Bottles' },
+      'Sunflower Oil (1 ltr)': { name: 'Sunflower Oil (1 ltr)', retail: 335, wholesale: 315, unit: 'Bottles' },
+      'Sunflower Oil (5 ltr)': { name: 'Sunflower Oil (5 ltr)', retail: 1590, wholesale: 1500, unit: 'Bottles' },
+      'Sunflower Oil (Loose)': { name: 'Sunflower Oil (Loose)', retail: 310, wholesale: 290, unit: 'Litres (Ltr)' },
+      'Sunflower Cake (Loose)': { name: 'Sunflower Cake (Loose)', retail: 35, wholesale: 30, unit: 'Kg' },
+      'Sunflower Cake (50 Kg Bag)': { name: 'Sunflower Cake (50 Kg Bag)', retail: 1700, wholesale: 1500, unit: 'Bags (50Kg)' },
+
+      'Safflower Oil (200 ml)': { name: 'Safflower Oil (200 ml)', retail: 140, wholesale: 130, unit: 'Bottles' },
+      'Safflower Oil (500 ml)': { name: 'Safflower Oil (500 ml)', retail: 205, wholesale: 190, unit: 'Bottles' },
+      'Safflower Oil (1 ltr)': { name: 'Safflower Oil (1 ltr)', retail: 380, wholesale: 350, unit: 'Bottles' },
+      'Safflower Oil (5 ltr)': { name: 'Safflower Oil (5 ltr)', retail: 1805, wholesale: 1700, unit: 'Bottles' },
+      'Safflower Oil (Loose)': { name: 'Safflower Oil (Loose)', retail: 350, wholesale: 320, unit: 'Litres (Ltr)' },
+      'Safflower Cake (Loose)': { name: 'Safflower Cake (Loose)', retail: 32, wholesale: 28, unit: 'Kg' },
+      'Safflower Cake (50 Kg Bag)': { name: 'Safflower Cake (50 Kg Bag)', retail: 1550, wholesale: 1350, unit: 'Bags (50Kg)' },
+
+      'Mustard Oil (200 ml)': { name: 'Mustard Oil (200 ml)', retail: 115, wholesale: 105, unit: 'Bottles' },
+      'Mustard Oil (500 ml)': { name: 'Mustard Oil (500 ml)', retail: 170, wholesale: 155, unit: 'Bottles' },
+      'Mustard Oil (1 ltr)': { name: 'Mustard Oil (1 ltr)', retail: 315, wholesale: 285, unit: 'Bottles' },
+      'Mustard Oil (5 ltr)': { name: 'Mustard Oil (5 ltr)', retail: 1495, wholesale: 1390, unit: 'Bottles' },
+      'Mustard Oil (Loose)': { name: 'Mustard Oil (Loose)', retail: 290, wholesale: 260, unit: 'Litres (Ltr)' },
+      'Mustard Cake (Loose)': { name: 'Mustard Cake (Loose)', retail: 36, wholesale: 32, unit: 'Kg' },
+      'Mustard Cake (50 Kg Bag)': { name: 'Mustard Cake (50 Kg Bag)', retail: 1750, wholesale: 1550, unit: 'Bags (50Kg)' },
+
+      'Coconut Oil (200 ml)': { name: 'Coconut Oil (200 ml)', retail: 175, wholesale: 155, unit: 'Bottles' },
+      'Coconut Oil (500 ml)': { name: 'Coconut Oil (500 ml)', retail: 255, wholesale: 230, unit: 'Bottles' },
+      'Coconut Oil (1 ltr)': { name: 'Coconut Oil (1 ltr)', retail: 470, wholesale: 420, unit: 'Bottles' },
+      'Coconut Oil (5 ltr)': { name: 'Coconut Oil (5 ltr)', retail: 2230, wholesale: 2050, unit: 'Bottles' },
+      'Coconut Oil (Loose)': { name: 'Coconut Oil (Loose)', retail: 440, wholesale: 400, unit: 'Litres (Ltr)' },
+      'Coconut Cake (Loose)': { name: 'Coconut Cake (Loose)', retail: 42, wholesale: 38, unit: 'Kg' },
+      'Coconut Cake (50 Kg Bag)': { name: 'Coconut Cake (50 Kg Bag)', retail: 2050, wholesale: 1850, unit: 'Bags (50Kg)' },
+
+      'Sesame Oil (200 ml)': { name: 'Sesame Oil (200 ml)', retail: 155, wholesale: 135, unit: 'Bottles' },
+      'Sesame Oil (500 ml)': { name: 'Sesame Oil (500 ml)', retail: 225, wholesale: 195, unit: 'Bottles' },
+      'Sesame Oil (1 ltr)': { name: 'Sesame Oil (1 ltr)', retail: 410, wholesale: 360, unit: 'Bottles' },
+      'Sesame Oil (5 ltr)': { name: 'Sesame Oil (5 ltr)', retail: 1945, wholesale: 1750, unit: 'Bottles' },
+      'Sesame Oil (Loose)': { name: 'Sesame Oil (Loose)', retail: 380, wholesale: 340, unit: 'Litres (Ltr)' },
+      'Sesame Cake (Loose)': { name: 'Sesame Cake (Loose)', retail: 40, wholesale: 35, unit: 'Kg' },
+      'Sesame Cake (50 Kg Bag)': { name: 'Sesame Cake (50 Kg Bag)', retail: 1950, wholesale: 1700, unit: 'Bags (50Kg)' },
+
+      'Flaxseed Oil (200 ml)': { name: 'Flaxseed Oil (200 ml)', retail: 130, wholesale: 115, unit: 'Bottles' },
+      'Flaxseed Oil (500 ml)': { name: 'Flaxseed Oil (500 ml)', retail: 185, wholesale: 170, unit: 'Bottles' },
+      'Flaxseed Oil (1 ltr)': { name: 'Flaxseed Oil (1 ltr)', retail: 345, wholesale: 345, unit: 'Bottles' },
+      'Flaxseed Oil (5 ltr)': { name: 'Flaxseed Oil (5 ltr)', retail: 1635, wholesale: 1550, unit: 'Bottles' },
+      'Flaxseed Oil (Loose)': { name: 'Flaxseed Oil (Loose)', retail: 320, wholesale: 300, unit: 'Litres (Ltr)' },
+      'Flaxseed Cake (Loose)': { name: 'Flaxseed Cake (Loose)', retail: 35, wholesale: 30, unit: 'Kg' },
+      'Flaxseed Cake (50 Kg Bag)': { name: 'Flaxseed Cake (50 Kg Bag)', retail: 1700, wholesale: 1450, unit: 'Bags (50Kg)' }
+    };
+
+    let logs = [];
+    let customers = [];
+    let editingLogId = null;
+    let currentFilterScope = 'all';
+    let currentDashScope = 'all';
+    let currentOrderTier = 'retail';
+
+    // Chart instances
+    let chartSeedInstance = null;
+    let chartOilInstance = null;
+    let chartCakeInstance = null;
+
+    // Firebase Setup
+    let db = null;
+    try {
+      const firebaseConfig = {
+        apiKey: "AIzaSyA_B7m6gqEhm-A2lXc9rqV8uy_3Adg2Fps",
+        authDomain: "shri-jagdamba-monitor.firebaseapp.com",
+        projectId: "shri-jagdamba-monitor",
+        storageBucket: "shri-jagdamba-monitor.firebasestorage.app",
+        messagingSenderId: "987532374562",
+        appId: "1:987532374562:web:4b4e682f68e185a300d07b"
+      };
+      if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+      }
+    } catch (e) {
+      console.warn("Firebase offline mode:", e);
+    }
+
+    // Init & Listen
+    window.addEventListener('DOMContentLoaded', () => {
+      const today = new Date().toISOString().split('T')[0];
+      const curMonth = today.substring(0, 7);
+      
+      document.getElementById('filter-date-val').value = today;
+      document.getElementById('filter-month-val').value = curMonth;
+
+      document.getElementById('dash-date-val').value = today;
+      document.getElementById('dash-month-val').value = curMonth;
+
+      const localL = localStorage.getItem('sji_logs_v27');
+      const localC = localStorage.getItem('sji_customers_v27');
+      if (localL) logs = JSON.parse(localL);
+      if (localC) customers = JSON.parse(localC);
+      renderAll();
+
+      if (db) {
+        db.collection('logs').onSnapshot(snap => {
+          logs = [];
+          snap.forEach(doc => logs.push({ id: doc.id, ...doc.data() }));
+          logs.sort((a,b) => (b.date || '').localeCompare(a.date || ''));
+          localStorage.setItem('sji_logs_v27', JSON.stringify(logs));
+          renderAll();
+        });
+        db.collection('customers').onSnapshot(snap => {
+          customers = [];
+          snap.forEach(doc => customers.push({ id: doc.id, ...doc.data() }));
+          localStorage.setItem('sji_customers_v27', JSON.stringify(customers));
+          renderAll();
+        });
+      }
+    });
+
+    function switchTab(tab) {
+      document.getElementById('view-dashboard').classList.toggle('hidden', tab !== 'dashboard');
+      document.getElementById('view-records').classList.toggle('hidden', tab !== 'records');
+      document.getElementById('view-customers').classList.toggle('hidden', tab !== 'customers');
+
+      ['dash', 'rec', 'cust'].forEach(t => {
+        const active = (t === 'dash' && tab === 'dashboard') || (t === 'rec' && tab === 'records') || (t === 'cust' && tab === 'customers');
+        document.getElementById('nav-' + t).className = active ? 'flex flex-col items-center gap-1 text-[#C0392B] font-bold' : 'flex flex-col items-center gap-1 text-gray-400';
+        document.getElementById('desk-' + t).className = active ? 'px-4 py-1.5 rounded-full text-xs font-bold bg-[#C0392B] text-white' : 'px-4 py-1.5 rounded-full text-xs font-bold text-gray-600 hover:bg-rose-50';
+      });
+      if (tab === 'records') renderFilteredRecords();
+    }
+
+    function setDashScope(scope) {
+      currentDashScope = scope;
+      ['all', 'date', 'month', 'year'].forEach(s => {
+        const btn = document.getElementById('btn-dash-' + s);
+        if (s === scope) {
+          btn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-[#C0392B] text-white';
+        } else {
+          btn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-gray-100 text-gray-700';
+        }
+      });
+
+      document.getElementById('dash-date-box').classList.toggle('hidden', scope !== 'date');
+      document.getElementById('dash-month-box').classList.toggle('hidden', scope !== 'month');
+      document.getElementById('dash-year-box').classList.toggle('hidden', scope !== 'year');
+
+      renderAll();
+    }
+
+    function setFilterScope(scope) {
+      currentFilterScope = scope;
+      ['all', 'date', 'month', 'year'].forEach(s => {
+        const btn = document.getElementById('btn-scope-' + s);
+        if (s === scope) {
+          btn.className = 'px-3 py-1 rounded-lg text-xs font-bold bg-[#C0392B] text-white';
+        } else {
+          btn.className = 'px-3 py-1 rounded-lg text-xs font-bold bg-gray-100 text-gray-700';
+        }
+      });
+
+      document.getElementById('filter-date-box').classList.toggle('hidden', scope !== 'date');
+      document.getElementById('filter-month-box').classList.toggle('hidden', scope !== 'month');
+      document.getElementById('filter-year-box').classList.toggle('hidden', scope !== 'year');
+
+      renderFilteredRecords();
+    }
+
+    function getProductConversion(productName, quantity, unit) {
+      const p = (productName || '').toLowerCase();
+      const qty = Number(quantity || 0);
+      let seedId = null;
+      for (const s of SEED_TYPES) {
+        if (p.includes(s.id) || (s.id === 'coconut' && p.includes('copra'))) {
+          seedId = s.id;
+          break;
+        }
+      }
+      if (!seedId) return { seedId: null, oilLtr: 0, cakeKg: 0 };
+
+      let oilLtr = 0, cakeKg = 0;
+      if (p.includes('oil')) {
+        if (p.includes('5 ltr')) oilLtr = qty * 5;
+        else if (p.includes('1 ltr')) oilLtr = qty * 1;
+        else if (p.includes('500 ml')) oilLtr = qty * 0.5;
+        else if (p.includes('200 ml')) oilLtr = qty * 0.2;
+        else oilLtr = (unit === 'Kg') ? qty / 0.91 : qty;
+      } else if (p.includes('cake')) {
+        if (p.includes('50 kg')) cakeKg = qty * 50;
+        else if (p.includes('25 kg')) cakeKg = qty * 25;
+        else cakeKg = qty;
+      }
+      return { seedId, oilLtr, cakeKg };
+    }
+
+    function updatePieChart(canvasId, existingChart, labels, data, colors, unitLabel) {
+      const ctx = document.getElementById(canvasId)?.getContext('2d');
+      if (!ctx) return existingChart;
+
+      const total = data.reduce((a, b) => a + b, 0);
+      const displayData = total === 0 ? [1] : data;
+      const displayColors = total === 0 ? ['#E5E7EB'] : colors;
+      const displayLabels = total === 0 ? ['No Inventory'] : labels;
+
+      if (existingChart) {
+        existingChart.data.labels = displayLabels;
+        existingChart.data.datasets[0].data = displayData;
+        existingChart.data.datasets[0].backgroundColor = displayColors;
+        existingChart.update();
+        return existingChart;
+      }
+
+      return new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: displayLabels,
+          datasets: [{
+            data: displayData,
+            backgroundColor: displayColors,
+            borderWidth: 2,
+            borderColor: '#FFFFFF'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              enabled: total > 0,
+              callbacks: {
+                label: function(context) {
+                  const val = context.raw || 0;
+                  const pct = total > 0 ? ((val / total) * 100).toFixed(1) : 0;
+                  return ` ${context.label}: ${val.toLocaleString()} ${unitLabel} (${pct}%)`;
+                }
+              }
+            }
+          },
+          cutout: '62%'
+        }
+      });
+    }
+
+    function renderAll() {
+      // Inventory calculations
+      const seedStock = {}, oilStock = {}, cakeStock = {};
+      SEED_TYPES.forEach(s => { seedStock[s.id] = 0; oilStock[s.id] = 0; cakeStock[s.id] = 0; });
+
+      logs.forEach(l => {
+        if (l.type === 'seed' && l.seedId) {
+          seedStock[l.seedId] = (seedStock[l.seedId] || 0) + Number(l.quantity || 0);
+        } else if (l.type === 'oil_arrival' && l.seedId) {
+          oilStock[l.seedId] = (oilStock[l.seedId] || 0) + Number(l.oilLtr || 0);
+        } else if (l.type === 'crush' && l.seedId) {
+          seedStock[l.seedId] = Math.max(0, (seedStock[l.seedId] || 0) - Number(l.quantity || 0));
+          oilStock[l.seedId] = (oilStock[l.seedId] || 0) + Number(l.oilLtr || 0);
+          cakeStock[l.seedId] = (cakeStock[l.seedId] || 0) + Number(l.cakeKg || 0);
+        } else if (l.type === 'order') {
+          const items = Array.isArray(l.items) ? l.items : (l.product ? [{ product: l.product, quantity: l.quantity, unit: l.unit }] : []);
+          items.forEach(it => {
+            const { seedId, oilLtr, cakeKg } = getProductConversion(it.product, it.quantity, it.unit);
+            if (seedId) {
+              oilStock[seedId] = Math.max(0, (oilStock[seedId] || 0) - oilLtr);
+              cakeStock[seedId] = Math.max(0, (cakeStock[seedId] || 0) - cakeKg);
+            }
+          });
+        }
+      });
+
+      // Filtered Dashboard Stats
+      const dDateVal = document.getElementById('dash-date-val')?.value || '';
+      const dMonthVal = document.getElementById('dash-month-val')?.value || '';
+      const dYearVal = document.getElementById('dash-year-val')?.value || '';
+
+      let dashFiltered = logs.filter(l => {
+        const logDate = l.date || '';
+        if (currentDashScope === 'date') return logDate === dDateVal;
+        else if (currentDashScope === 'month') return logDate.startsWith(dMonthVal);
+        else if (currentDashScope === 'year') return logDate.startsWith(dYearVal);
+        return true;
+      });
+
+      let totalSales = 0, totalPaid = 0, totalOil = 0, totalCake = 0;
+      dashFiltered.forEach(l => {
+        if (l.type === 'order') {
+          totalSales += Number(l.totalAmount || 0);
+        } else if (l.type === 'payment') {
+          totalPaid += Number(l.amount || 0);
+        } else if (l.type === 'crush') {
+          totalOil += Number(l.oilLtr || 0);
+          totalCake += Number(l.cakeKg || 0);
+        }
+      });
+
+      let dashLabel = 'Showing All Time Data';
+      if (currentDashScope === 'date') dashLabel = `Day: ${dDateVal}`;
+      else if (currentDashScope === 'month') dashLabel = `Month: ${dMonthVal}`;
+      else if (currentDashScope === 'year') dashLabel = `Year: ${dYearVal}`;
+      const summaryEl = document.getElementById('dash-filter-summary');
+      if (summaryEl) summaryEl.innerText = dashLabel;
+
+      document.getElementById('stat-sales').innerText = '₹' + totalSales.toLocaleString();
+      document.getElementById('stat-due').innerText = '₹' + (totalSales - totalPaid).toLocaleString();
+      document.getElementById('stat-oil').innerHTML = totalOil.toLocaleString() + ' <span class="text-[10px] font-normal text-gray-500">Ltr</span>';
+      document.getElementById('stat-cake').innerHTML = totalCake.toLocaleString() + ' <span class="text-[10px] font-normal text-gray-500">Kg</span>';
+
+      // Totals
+      const totalSeedVal = SEED_TYPES.reduce((acc, s) => acc + (seedStock[s.id] || 0), 0);
+      const totalOilVal = SEED_TYPES.reduce((acc, s) => acc + (oilStock[s.id] || 0), 0);
+      const totalCakeVal = SEED_TYPES.reduce((acc, s) => acc + (cakeStock[s.id] || 0), 0);
+
+      document.getElementById('total-seed-badge').innerText = `Total: ${totalSeedVal.toLocaleString()} Kg`;
+      document.getElementById('total-oil-badge').innerText = `Total: ${totalOilVal.toLocaleString()} Ltr`;
+      document.getElementById('total-cake-badge').innerText = `Total: ${totalCakeVal.toLocaleString()} Kg`;
+
+      // Seed Grid
+      document.getElementById('grid-seed-inv').innerHTML = SEED_TYPES.map((s, idx) => `
+        <div class="p-2 rounded-xl bg-rose-50/70 border border-rose-200 text-center flex flex-col justify-between">
+          <p class="text-[11px] font-bold text-gray-800 truncate flex items-center justify-center gap-1">
+            <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: ${VARIETY_COLORS[idx % VARIETY_COLORS.length]}"></span>
+            ${s.name}
+          </p>
+          <p class="text-xs sm:text-sm font-black text-[#C0392B] mt-0.5">${Number(seedStock[s.id] || 0).toLocaleString()} <span class="text-[10px] font-normal text-gray-500">Kg</span></p>
+        </div>
+      `).join('');
+
+      // Oil Grid
+      document.getElementById('grid-oil-inv').innerHTML = SEED_TYPES.map((s, idx) => `
+        <div class="p-2 rounded-xl bg-orange-50/70 border border-orange-200 text-center flex flex-col justify-between">
+          <p class="text-[11px] font-bold text-gray-800 truncate flex items-center justify-center gap-1">
+            <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: ${VARIETY_COLORS[idx % VARIETY_COLORS.length]}"></span>
+            ${s.name} Oil
+          </p>
+          <p class="text-xs sm:text-sm font-black text-orange-700 mt-0.5">${Number(oilStock[s.id] || 0).toLocaleString()} <span class="text-[10px] font-normal text-gray-500">Ltr</span></p>
+        </div>
+      `).join('');
+
+      // Cake Grid
+      document.getElementById('grid-cake-inv').innerHTML = SEED_TYPES.map((s, idx) => `
+        <div class="p-2 rounded-xl bg-amber-50/70 border border-amber-200 text-center flex flex-col justify-between">
+          <p class="text-[11px] font-bold text-gray-800 truncate flex items-center justify-center gap-1">
+            <span class="w-2 h-2 rounded-full flex-shrink-0" style="background-color: ${VARIETY_COLORS[idx % VARIETY_COLORS.length]}"></span>
+            ${s.name} Cake
+          </p>
+          <p class="text-xs sm:text-sm font-black text-amber-800 mt-0.5">${Number(cakeStock[s.id] || 0).toLocaleString()} <span class="text-[10px] font-normal text-gray-500">Kg</span></p>
+        </div>
+      `).join('');
+
+      // Render 3 Doughnut Pie Charts
+      const seedLabels = SEED_TYPES.map(s => s.name);
+      const seedData = SEED_TYPES.map(s => Number(seedStock[s.id] || 0));
+      chartSeedInstance = updatePieChart('chart-seed-pie', chartSeedInstance, seedLabels, seedData, VARIETY_COLORS, 'Kg');
+
+      const oilLabels = SEED_TYPES.map(s => s.name + ' Oil');
+      const oilData = SEED_TYPES.map(s => Number(oilStock[s.id] || 0));
+      chartOilInstance = updatePieChart('chart-oil-pie', chartOilInstance, oilLabels, oilData, VARIETY_COLORS, 'Ltr');
+
+      const cakeLabels = SEED_TYPES.map(s => s.name + ' Cake');
+      const cakeData = SEED_TYPES.map(s => Number(cakeStock[s.id] || 0));
+      chartCakeInstance = updatePieChart('chart-cake-pie', chartCakeInstance, cakeLabels, cakeData, VARIETY_COLORS, 'Kg');
+
+      // Customer Directory Map & Consolidation
+      const custMap = new Map();
+      customers.forEach(c => {
+        if (c.name) custMap.set(c.name.trim(), { ...c, name: c.name.trim() });
+      });
+      logs.forEach(l => {
+        if (l.type === 'order' && l.customer) {
+          const cName = l.customer.trim();
+          if (!custMap.has(cName)) {
+            custMap.set(cName, {
+              id: 'ord-' + cName,
+              name: cName,
+              phone: l.phone || '',
+              city: l.city || 'Local Buyer'
+            });
+          } else {
+            const cur = custMap.get(cName);
+            if (l.city && !cur.city) cur.city = l.city;
+            if (l.phone && !cur.phone) cur.phone = l.phone;
+          }
+        }
+      });
+      const custArray = Array.from(custMap.values()).sort((a,b) => a.name.localeCompare(b.name));
+
+      document.getElementById('grid-customers').innerHTML = custArray.map(c => {
+        const billed = logs.filter(l => l.type === 'order' && l.customer === c.name).reduce((s, o) => s + Number(o.totalAmount || 0), 0);
+        const paid = logs.filter(l => l.type === 'payment' && l.customer === c.name).reduce((s, p) => s + Number(p.amount || 0), 0);
+        const due = billed - paid;
+        return `
+          <div class="bg-white p-3.5 rounded-2xl border border-rose-100 shadow-xl flex flex-col justify-between">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="font-extrabold text-[#1A1A1A] text-xs">${c.name}</h4>
+                <p class="text-[11px] text-gray-600 font-medium">
+                  <i class="fa-solid fa-location-dot text-[#C0392B] mr-0.5 text-[10px]"></i>
+                  ${c.city || 'Local Area'}
+                </p>
+                ${c.phone ? `<p class="text-[11px] text-gray-500 font-medium mt-0.5"><i class="fa-solid fa-phone text-gray-400 mr-1 text-[10px]"></i>${c.phone}</p>` : ''}
+              </div>
+              <span class="text-[10px] px-2 py-0.5 rounded-md font-bold ${due > 0 ? 'bg-rose-100 text-[#C0392B]' : 'bg-emerald-100 text-emerald-800'}">
+                ${due > 0 ? 'Due: ₹' + due.toLocaleString() : 'Cleared'}
+              </span>
+            </div>
+            <div class="flex gap-2 mt-3 pt-2.5 border-t border-gray-100">
+              <button onclick="openModal('order', '${c.name}')" class="flex-1 bg-[#C0392B] hover:bg-[#A93226] text-white py-1 rounded-lg text-xs font-bold shadow-sm">Order</button>
+              <button onclick="openModal('payment', '${c.name}')" class="flex-1 bg-rose-50 hover:bg-rose-100 text-rose-900 py-1 rounded-lg text-xs font-bold">Payment</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      renderFilteredRecords();
+    }
+
+    function getFilteredLogsData() {
+      const typeFilter = document.getElementById('filter-type-val').value;
+      const deliveryFilter = document.getElementById('filter-delivery-val').value;
+      const dateVal = document.getElementById('filter-date-val').value;
+      const monthVal = document.getElementById('filter-month-val').value;
+      const yearVal = document.getElementById('filter-year-val').value;
+
+      return logs.filter(l => {
+        if (typeFilter !== 'ALL' && l.type !== typeFilter) return false;
+
+        if (deliveryFilter !== 'ALL') {
+          if (l.type !== 'order') return false;
+          const isDelivered = (l.delivered === true);
+          if (deliveryFilter === 'DELIVERED' && !isDelivered) return false;
+          if (deliveryFilter === 'PENDING' && isDelivered) return false;
+        }
+
+        const logDate = l.date || '';
+        if (currentFilterScope === 'date') return logDate === dateVal;
+        else if (currentFilterScope === 'month') return logDate.startsWith(monthVal);
+        else if (currentFilterScope === 'year') return logDate.startsWith(yearVal);
+        return true;
+      });
+    }
+
+    function renderFilteredRecords() {
+      const filtered = getFilteredLogsData();
+
+      const dateVal = document.getElementById('filter-date-val').value;
+      const monthVal = document.getElementById('filter-month-val').value;
+      const yearVal = document.getElementById('filter-year-val').value;
+
+      let label = 'Showing All Records (' + filtered.length + ')';
+      if (currentFilterScope === 'date') label = `Date: ${dateVal} (${filtered.length} records)`;
+      else if (currentFilterScope === 'month') label = `Month: ${monthVal} (${filtered.length} records)`;
+      else if (currentFilterScope === 'year') label = `Year: ${yearVal} (${filtered.length} records)`;
+      document.getElementById('filtered-stats-label').innerText = label;
+
+      const tbody = document.getElementById('table-logs-body');
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="py-10 text-center text-gray-400 text-xs font-medium">No records found for the selected criteria.</td></tr>`;
+      } else {
+        tbody.innerHTML = filtered.map(l => {
+          let itemsHtml = '-';
+          if (l.type === 'order' && Array.isArray(l.items)) {
+            itemsHtml = l.items.map(it => `• ${it.product}: <span class="font-bold">${it.quantity} ${it.unit}</span> @ ₹${it.rate}`).join('<br/>');
+          } else if (l.type === 'crush') {
+            itemsHtml = `<span class="text-amber-800 font-bold">${l.oilLtr} Ltr Oil • ${l.cakeKg} Kg Cake (Crushed ${l.quantity} Kg)</span>`;
+          } else if (l.type === 'oil_arrival') {
+            itemsHtml = `<span class="text-orange-800 font-bold">${l.oilLtr} Ltr Inward</span>`;
+          } else if (l.quantity) {
+            itemsHtml = `${l.quantity} ${l.unit || 'Kg'}`;
+          }
+
+          const badgeClass = l.type === 'order' ? 'bg-rose-100 text-rose-800' :
+                             l.type === 'payment' ? 'bg-emerald-100 text-emerald-800' :
+                             l.type === 'seed' ? 'bg-red-100 text-[#C0392B]' :
+                             l.type === 'oil_arrival' ? 'bg-orange-100 text-orange-800' : 'bg-purple-100 text-purple-800';
+
+          const badgeLabel = l.type === 'oil_arrival' ? 'Oil Inward' : l.type;
+
+          let deliveryCell = '-';
+          if (l.type === 'order') {
+            const isDone = (l.delivered === true);
+            deliveryCell = `
+              <button onclick="toggleDeliveryStatus('${l.id}', ${!isDone})" class="px-2 py-1 rounded-lg text-[10px] font-bold transition flex items-center gap-1.5 ${isDone ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' : 'bg-rose-100 text-[#C0392B] hover:bg-rose-200'}">
+                <i class="fa-solid ${isDone ? 'fa-circle-check text-emerald-600' : 'fa-clock text-[#C0392B]'}"></i>
+                ${isDone ? 'Delivered' : 'Pending'}
+              </button>
+            `;
+          }
+
+          const receiptBtn = (l.type === 'order') ? `
+            <button onclick="generateReceipt('${l.id}')" class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 flex items-center justify-center transition" title="Print/View Tax Invoice Receipt">
+              <i class="fa-solid fa-receipt text-[11px]"></i>
+            </button>
+          ` : '';
+
+          return `
+            <tr class="hover:bg-rose-50/40">
+              <td class="p-2.5 whitespace-nowrap text-gray-500 font-medium">${l.date || '-'}</td>
+              <td class="p-2.5 whitespace-nowrap"><span class="px-1.5 py-0.5 rounded font-bold uppercase text-[9px] ${badgeClass}">${badgeLabel}</span></td>
+              <td class="p-2.5 max-w-[170px] truncate">
+                <span class="font-bold text-[#1A1A1A]">${l.customer || l.supplier || '-'}</span>
+                ${l.city ? `<span class="text-[10px] block text-gray-500 truncate font-medium"><i class="fa-solid fa-location-dot text-[9px] mr-1 text-[#C0392B]"></i>${l.city}</span>` : ''}
+                ${l.phone ? `<span class="text-[10px] block text-gray-400 truncate font-medium"><i class="fa-solid fa-phone text-[8px] mr-1"></i>${l.phone}</span>` : ''}
+                ${l.tier ? `<span class="text-[9px] block text-[#C0392B] uppercase font-bold tracking-wider">${l.tier}</span>` : ''}
+              </td>
+              <td class="p-2.5 text-[11px]">${itemsHtml}</td>
+              <td class="p-2.5 whitespace-nowrap">${deliveryCell}</td>
+              <td class="p-2.5 text-right font-extrabold whitespace-nowrap">${(l.amount || l.totalAmount) ? '₹' + Number(l.amount || l.totalAmount).toLocaleString() : '-'}</td>
+              <td class="p-2.5 text-center whitespace-nowrap">
+                <div class="flex items-center justify-center gap-1.5">
+                  ${receiptBtn}
+                  <button onclick="editLog('${l.id}')" class="w-7 h-7 rounded-lg bg-rose-50 text-[#C0392B] hover:bg-rose-100 flex items-center justify-center" title="Edit Record">
+                    <i class="fa-solid fa-pen-to-square text-[11px]"></i>
+                  </button>
+                  <button onclick="deleteLog('${l.id}')" class="w-7 h-7 rounded-lg bg-gray-100 text-gray-700 hover:bg-rose-100 hover:text-[#C0392B] flex items-center justify-center" title="Delete Record">
+                    <i class="fa-solid fa-trash text-[11px]"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+    }
+
+    // Receipt Generator for Order Records with Exact 'sjiicon.png' & High-Reliability Mobile Sharing
+    function generateReceipt(id) {
+      const order = logs.find(l => l.id === id);
+      if (!order || order.type !== 'order') return;
+
+      const items = Array.isArray(order.items) && order.items.length > 0 ? order.items : [
+        { product: order.product || 'Cold Pressed Oil', quantity: order.quantity || 1, unit: order.unit || 'Bottle', rate: order.rate || order.totalAmount }
+      ];
+
+      const invoiceNum = 'SJI-' + (order.date || '2026').replace(/-/g, '') + '-' + order.id.slice(-4).toUpperCase();
+      const totalAmt = Number(order.totalAmount || 0);
+
+      const upiUri = `upi://pay?pa=7350071696m@pnb&pn=SHRI%20JAGDAMBA%20INDUSTRY&am=${totalAmt}&cu=INR&tn=Invoice%20${invoiceNum}`;
+      const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(upiUri)}`;
+
+      const body = document.getElementById('modal-body');
+      body.innerHTML = `
+        <div class="p-5 sm:p-6 bg-white space-y-4 max-h-[90vh] overflow-y-auto">
+          <!-- Printable / Exportable Invoice Card -->
+          <div id="receipt-card" class="bg-white space-y-4 p-1">
+            <!-- Header with Exact sjiicon.png -->
+            <div class="border-b-2 border-gray-900 pb-3 flex justify-between items-start gap-2">
+              <div>
+                <div class="flex items-center gap-3">
+                  <img 
+                    src="sjiicon.png" 
+                    alt="Shri Jagdamba Industry" 
+                    class="h-12 w-12 object-contain flex-shrink-0"
+                    onerror="this.src='https://raw.githubusercontent.com/ShreeramKarande/Shri-Jagdamba-Industry/main/sjiicon.png'"
+                  />
+                  <div>
+                    <h2 class="text-sm sm:text-base font-black tracking-tight text-gray-950 uppercase leading-none">Shri Jagdamba Industry</h2>
+                    <p class="text-[9px] sm:text-[10px] font-extrabold text-[#C0392B] tracking-wide mt-0.5">100% PURE & UNREFINED COLD PRESSED EDIBLE OILS</p>
+                  </div>
+                </div>
+                <p class="text-[9px] sm:text-[10px] text-gray-600 mt-2 leading-tight">
+                  Sr. No. 23, More Park, Uruli Devachi, Pune, Maharashtra - 412308<br/>
+                  Contact: +91 9763728630 / 7350071696 | Email: sjagdambaind@gmail.com
+                </p>
+              </div>
+              <div class="text-right whitespace-nowrap">
+                <span class="inline-block bg-gray-900 text-white text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 rounded tracking-wider uppercase">Tax Invoice</span>
+                <p class="text-[10px] sm:text-[11px] font-black text-gray-900 mt-1">#${invoiceNum}</p>
+                <p class="text-[9px] sm:text-[10px] text-gray-500">Date: ${order.date}</p>
+              </div>
+            </div>
+
+            <!-- Customer Info -->
+            <div class="grid grid-cols-2 gap-3 bg-gray-50 p-3 rounded-xl border border-gray-200 text-xs">
+              <div>
+                <p class="text-[9px] font-extrabold text-gray-400 uppercase">Billed To (Customer):</p>
+                <p class="text-xs sm:text-sm font-black text-gray-900 mt-0.5">${order.customer}</p>
+                ${order.city ? `<p class="text-[10px] sm:text-[11px] text-gray-700 font-medium"><i class="fa-solid fa-location-dot text-[9px] text-[#C0392B] mr-1"></i>${order.city}</p>` : ''}
+                ${order.phone ? `<p class="text-[10px] sm:text-[11px] text-gray-700 font-medium"><i class="fa-solid fa-phone text-[9px] text-gray-500 mr-1"></i>${order.phone}</p>` : ''}
+              </div>
+              <div class="text-right">
+                <p class="text-[9px] font-extrabold text-gray-400 uppercase">Order Details:</p>
+                <p class="text-[10px] sm:text-[11px] font-bold text-gray-800 mt-0.5">Tier: <span class="uppercase text-[#C0392B]">${order.tier || 'Retail'}</span></p>
+                <p class="text-[10px] sm:text-[11px] font-bold text-gray-800">Delivery: <span class="${order.delivered ? 'text-emerald-700' : 'text-amber-700'}">${order.delivered ? 'Delivered' : 'Pending'}</span></p>
+              </div>
+            </div>
+
+            <!-- Items Table -->
+            <table class="w-full text-left text-xs border border-gray-200 rounded-lg overflow-hidden">
+              <thead class="bg-gray-100 text-gray-800 font-bold border-b border-gray-200 uppercase text-[9px] sm:text-[10px]">
+                <tr>
+                  <th class="p-2 sm:p-2.5">#</th>
+                  <th class="p-2 sm:p-2.5">Product Description</th>
+                  <th class="p-2 sm:p-2.5 text-center">Qty</th>
+                  <th class="p-2 sm:p-2.5 text-right">Rate</th>
+                  <th class="p-2 sm:p-2.5 text-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+                ${items.map((it, idx) => `
+                  <tr class="hover:bg-gray-50">
+                    <td class="p-2 sm:p-2.5 text-gray-500 font-bold">${idx + 1}</td>
+                    <td class="p-2 sm:p-2.5 font-bold text-gray-900">${it.product}</td>
+                    <td class="p-2 sm:p-2.5 text-center font-medium">${it.quantity} ${it.unit}</td>
+                    <td class="p-2 sm:p-2.5 text-right font-medium">₹${Number(it.rate).toLocaleString()}</td>
+                    <td class="p-2 sm:p-2.5 text-right font-black text-gray-900">₹${(Number(it.quantity) * Number(it.rate)).toLocaleString()}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+              <tfoot class="bg-gray-50 font-bold border-t-2 border-gray-300">
+                <tr>
+                  <td colspan="4" class="p-2 sm:p-2.5 text-right uppercase text-[10px] sm:text-[11px]">Total Invoice Value:</td>
+                  <td class="p-2 sm:p-2.5 text-right text-xs sm:text-sm font-black text-[#C0392B]">₹${totalAmt.toLocaleString()}</td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <!-- Scan & Pay QR Code Section -->
+            <div class="p-3 bg-gradient-to-r from-orange-50/70 via-rose-50/70 to-emerald-50/70 rounded-xl border border-rose-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div class="p-1.5 bg-white rounded-lg border border-gray-300 shadow-sm flex-shrink-0">
+                  <img src="${qrCodeUrl}" alt="Payment UPI QR Code" class="w-24 h-24 sm:w-28 sm:h-28 object-contain rounded" />
+                </div>
+                <div>
+                  <p class="text-[9px] font-black uppercase tracking-wider text-[#C0392B] flex items-center gap-1">
+                    <i class="fa-solid fa-qrcode"></i> Scan & Pay using Any UPI App
+                  </p>
+                  <p class="text-xs font-black text-gray-900 mt-0.5">UPI ID: 7350071696m@pnb</p>
+                  <p class="text-[10px] font-bold text-gray-700">Merchant: SHRI JAGDAMBA INDUSTRY</p>
+                  <div class="flex items-center gap-1.5 mt-1 text-[9px] font-extrabold text-gray-600">
+                    <span class="px-1.5 py-0.5 bg-white rounded border border-gray-300">GPay</span>
+                    <span class="px-1.5 py-0.5 bg-white rounded border border-gray-300">PhonePe</span>
+                    <span class="px-1.5 py-0.5 bg-white rounded border border-gray-300">Paytm</span>
+                    <span class="px-1.5 py-0.5 bg-white rounded border border-gray-300">BHIM</span>
+                  </div>
+                </div>
+              </div>
+              <div class="text-right sm:border-l sm:border-gray-200 sm:pl-3 w-full sm:w-auto flex justify-between sm:block items-center">
+                <div>
+                  <p class="text-[9px] font-bold text-gray-500 uppercase">Amount Payable</p>
+                  <p class="text-sm font-black text-[#C0392B]">₹${totalAmt.toLocaleString()}</p>
+                </div>
+                <p class="text-[8px] text-gray-400 mt-1 hidden sm:block">Instant Bank Confirmation</p>
+              </div>
+            </div>
+
+            <!-- Footer & Note -->
+            <div class="border-t border-gray-200 pt-2.5 flex justify-between items-end text-[9px] sm:text-[10px] text-gray-500">
+              <div>
+                <p class="font-bold text-gray-800">Thank you for choosing Nuova Cold Pressed Oils!</p>
+                <p>Natural, fresh, unrefined edible oils prepared with care.</p>
+              </div>
+              <div class="text-right">
+                <p class="font-black text-gray-900 text-[11px]">For Shri Jagdamba Industry</p>
+                <p class="text-[8px] text-gray-400 mt-3">Authorized Signatory</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal Actions (Hidden during Print) -->
+          <div class="flex gap-2 pt-2 border-t border-gray-200 no-print">
+            <button type="button" onclick="closeModal()" class="flex-1 py-2.5 rounded-xl text-xs font-bold bg-gray-100 hover:bg-gray-200 text-gray-700 transition">
+              Close
+            </button>
+            <button type="button" onclick="shareReceiptOnline('${id}')" id="btn-share-online" class="flex-1 py-2.5 rounded-xl text-xs font-black bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-1.5 shadow-md transition">
+              <i class="fa-solid fa-share-nodes text-sm"></i> Share Online
+            </button>
+            <button type="button" onclick="downloadInvoicePDF('${invoiceNum}')" id="btn-download-pdf" class="flex-1 py-2.5 rounded-xl text-xs font-black bg-[#C0392B] hover:bg-[#A93226] text-white flex items-center justify-center gap-1.5 shadow-md transition">
+              <i class="fa-solid fa-file-pdf text-sm"></i> Download PDF
+            </button>
+          </div>
+        </div>
+      `;
+      document.getElementById('modal-container').classList.remove('hidden');
+    }
+
+    // High-Reliability Mobile PDF Downloader using html2pdf.js
+    function downloadInvoicePDF(invoiceNum) {
+      const element = document.getElementById('receipt-card');
+      const btn = document.getElementById('btn-download-pdf');
+      if (!element) return;
+
+      if (btn) {
+        btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Generating...`;
+        btn.disabled = true;
+      }
+
+      const opt = {
+        margin: [8, 8, 8, 8],
+        filename: `${invoiceNum}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2.5, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(element).save().then(() => {
+        if (btn) {
+          btn.innerHTML = `<i class="fa-solid fa-file-pdf text-sm"></i> Download PDF`;
+          btn.disabled = false;
+        }
+      }).catch((err) => {
+        console.warn("PDF generation fallback:", err);
+        window.print();
+        if (btn) {
+          btn.innerHTML = `<i class="fa-solid fa-file-pdf text-sm"></i> Download PDF`;
+          btn.disabled = false;
+        }
+      });
+    }
+
+    // Clean text invoice builder for messaging & social apps
+    function buildReceiptShareText(id) {
+      const order = logs.find(l => l.id === id);
+      if (!order) return '';
+
+      const invoiceNum = 'SJI-' + (order.date || '2026').replace(/-/g, '') + '-' + order.id.slice(-4).toUpperCase();
+      const items = Array.isArray(order.items) && order.items.length > 0 ? order.items : [
+        { product: order.product || 'Cold Pressed Oil', quantity: order.quantity || 1, unit: order.unit || 'Bottle', rate: order.rate || order.totalAmount }
+      ];
+
+      let msg = `🧾 *TAX INVOICE - SHRI JAGDAMBA INDUSTRY*\n`;
+      msg += `🌿 100% Pure & Unrefined Cold Pressed Edible Oils\n`;
+      msg += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+      msg += `📋 *Invoice No:* #${invoiceNum}\n`;
+      msg += `📅 *Date:* ${order.date}\n`;
+      msg += `👤 *Customer:* ${order.customer}\n`;
+      if (order.city) msg += `📍 *City/Area:* ${order.city}\n`;
+      if (order.phone) msg += `📞 *Mobile:* ${order.phone}\n`;
+      msg += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+      msg += `📦 *ORDER ITEMS:*\n`;
+      items.forEach((it, idx) => {
+        const itemTotal = Number(it.quantity) * Number(it.rate);
+        msg += `${idx + 1}. ${it.product} - ${it.quantity} ${it.unit} @ ₹${it.rate} = ₹${itemTotal.toLocaleString()}\n`;
+      });
+      msg += `━━━━━━━━━━━━━━━━━━━━━━\n`;
+      msg += `💰 *TOTAL AMOUNT DUE: ₹${Number(order.totalAmount || 0).toLocaleString()}*\n`;
+      msg += `🚚 *Delivery Status:* ${order.delivered ? 'Delivered' : 'Pending'}\n\n`;
+      msg += `📲 *PAYMENT UPI DETAILS:*\n`;
+      msg += `UPI ID: 7350071696m@pnb\n`;
+      msg += `Merchant: SHRI JAGDAMBA INDUSTRY\n`;
+      msg += `Pay via GPay, PhonePe, Paytm or BHIM\n\n`;
+      msg += `🏭 Sr. No. 23, More Park, Uruli Devachi, Pune - 412308\n`;
+      msg += `📞 Helpline: +91 9763728630 / 7350071696`;
+      return msg;
+    }
+
+    // Direct Universal Online Sharing via Native Web Share API without Alert Dialogs
+    async function shareReceiptOnline(id) {
+      const order = logs.find(l => l.id === id);
+      const text = buildReceiptShareText(id);
+      const invoiceNum = 'SJI-' + (order?.date || '2026').replace(/-/g, '') + '-' + (order?.id ? order.id.slice(-4).toUpperCase() : '');
+
+      const shareData = {
+        title: `Tax Invoice #${invoiceNum} - Shri Jagdamba Industry`,
+        text: text
+      };
+
+      if (navigator.share) {
+        try {
+          await navigator.share(shareData);
+        } catch (err) {
+          if (err.name !== 'AbortError') {
+            directAppShareFallback(order, text);
+          }
+        }
+      } else {
+        directAppShareFallback(order, text);
+      }
+    }
+
+    // Direct Intent / WhatsApp / Clipboard Fallback when Native Share is Unavailable
+    function directAppShareFallback(order, text) {
+      let phone = order?.phone ? order.phone.replace(/[^0-9]/g, '') : '';
+      if (phone.length === 10) phone = '91' + phone;
+
+      if (phone) {
+        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`, '_blank');
+      } else {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text);
+        }
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+      }
+    }
+
+    // Excel Export Utilities using SheetJS
+    function exportRecordsToExcel() {
+      const records = getFilteredLogsData();
+      if (!records || records.length === 0) {
+        alert("No records available to export for the active filter.");
+        return;
+      }
+
+      const rows = [];
+      records.forEach(l => {
+        if (l.type === 'order' && Array.isArray(l.items) && l.items.length > 0) {
+          l.items.forEach(it => {
+            rows.push({
+              "Date": l.date || '',
+              "Record Type": "Sales Order",
+              "Customer / Party": l.customer || '',
+              "Mobile Number": l.phone || '',
+              "City / Area": l.city || '',
+              "Pricing Tier": (l.tier || 'retail').toUpperCase(),
+              "Product Variety": it.product || '',
+              "Quantity": it.quantity || 0,
+              "Unit": it.unit || '',
+              "Rate (Rs)": it.rate || 0,
+              "Line Total (Rs)": (Number(it.quantity || 0) * Number(it.rate || 0)),
+              "Total Bill Amount (Rs)": Number(l.totalAmount || 0),
+              "Delivery Status": l.delivered ? "Delivered" : "Pending",
+              "Delivery Date": l.deliveryDate || '',
+              "Payment Method": '',
+              "Supplier / Vendor": '',
+              "Seed Crushed (Kg)": '',
+              "Oil Output (Ltr)": '',
+              "Cake Output (Kg)": ''
+            });
+          });
+        } else {
+          rows.push({
+            "Date": l.date || '',
+            "Record Type": l.type === 'crush' ? 'Crushing Batch' :
+                           l.type === 'seed' ? 'Seed Stock Inward' :
+                           l.type === 'oil_arrival' ? 'Ready Oil Inward' :
+                           l.type === 'payment' ? 'Payment Received' : l.type,
+            "Customer / Party": l.customer || l.supplier || '',
+            "Mobile Number": l.phone || '',
+            "City / Area": l.city || '',
+            "Pricing Tier": '',
+            "Product Variety": l.details || '',
+            "Quantity": l.quantity || l.oilLtr || '',
+            "Unit": l.unit || (l.type === 'oil_arrival' ? 'Ltr' : ''),
+            "Rate (Rs)": l.rate || '',
+            "Line Total (Rs)": l.amount || '',
+            "Total Bill Amount (Rs)": l.amount || l.totalAmount || '',
+            "Delivery Status": '',
+            "Delivery Date": '',
+            "Payment Method": l.mode || '',
+            "Supplier / Vendor": l.supplier || '',
+            "Seed Crushed (Kg)": l.type === 'crush' ? (l.quantity || '') : '',
+            "Oil Output (Ltr)": l.type === 'crush' ? (l.oilLtr || '') : (l.type === 'oil_arrival' ? (l.oilLtr || '') : ''),
+            "Cake Output (Kg)": l.type === 'crush' ? (l.cakeKg || '') : ''
+          });
+        }
+      });
+
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Operational_Records");
+
+      const todayStr = new Date().toISOString().split('T')[0];
+      XLSX.writeFile(wb, `Shri_Jagdamba_Daily_Records_${todayStr}.xlsx`);
+    }
+
+    function exportCustomersToExcel() {
+      const custMap = new Map();
+      customers.forEach(c => {
+        if (c.name) custMap.set(c.name.trim(), { ...c, name: c.name.trim() });
+      });
+      logs.forEach(l => {
+        if (l.type === 'order' && l.customer) {
+          const cName = l.customer.trim();
+          if (!custMap.has(cName)) {
+            custMap.set(cName, {
+              id: 'ord-' + cName,
+              name: cName,
+              phone: l.phone || '',
+              city: l.city || 'Local Buyer'
+            });
+          } else {
+            const cur = custMap.get(cName);
+            if (l.city && !cur.city) cur.city = l.city;
+            if (l.phone && !cur.phone) cur.phone = l.phone;
+          }
+        }
+      });
+
+      const custArray = Array.from(custMap.values()).sort((a,b) => a.name.localeCompare(b.name));
+      if (custArray.length === 0) {
+        alert("No customers available to export.");
+        return;
+      }
+
+      const rows = custArray.map((c, index) => {
+        const orders = logs.filter(l => l.type === 'order' && l.customer === c.name);
+        const totalBilled = orders.reduce((s, o) => s + Number(o.totalAmount || 0), 0);
+        const totalPaid = logs.filter(l => l.type === 'payment' && l.customer === c.name).reduce((s, p) => s + Number(p.amount || 0), 0);
+        const due = totalBilled - totalPaid;
+
+        return {
+          "Sr No": index + 1,
+          "Customer Name": c.name,
+          "Mobile Number": c.phone || 'N/A',
+          "City / Delivery Area": c.city || 'Local',
+          "Total Billed (Rs)": totalBilled,
+          "Total Paid (Rs)": totalPaid,
+          "Outstanding Due (Rs)": due,
+          "Account Status": due > 0 ? "Pending Due" : "Cleared",
+          "Total Orders Count": orders.length
+        };
+      });
+
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Customer_Directory");
+
+      const todayStr = new Date().toISOString().split('T')[0];
+      XLSX.writeFile(wb, `Shri_Jagdamba_Customer_Directory_${todayStr}.xlsx`);
+    }
+
+    async function toggleDeliveryStatus(id, newStatus) {
+      if (db) {
+        await db.collection('logs').doc(id).update({
+          delivered: newStatus,
+          deliveryDate: newStatus ? new Date().toISOString().split('T')[0] : null
+        });
+      } else {
+        logs = logs.map(l => l.id === id ? { ...l, delivered: newStatus, deliveryDate: newStatus ? new Date().toISOString().split('T')[0] : null } : l);
+        localStorage.setItem('sji_logs_v27', JSON.stringify(logs));
+        renderAll();
+      }
+    }
+
+    function getAllCustomerList() {
+      const set = new Set(customers.map(c => c.name));
+      logs.forEach(l => { if (l.type === 'order' && l.customer) set.add(l.customer.trim()); });
+      return Array.from(set).sort();
+    }
+
+    function closeModal() {
+      document.getElementById('modal-container').classList.add('hidden');
+      editingLogId = null;
+    }
+
+    function openModal(type, preCustomer = '') {
+      editingLogId = null;
+      const today = new Date().toISOString().split('T')[0];
+      const custList = getAllCustomerList();
+      const body = document.getElementById('modal-body');
+
+      if (type === 'seed') {
+        body.innerHTML = `
+          <form onsubmit="saveSeed(event)" class="p-4 space-y-3">
+            <div class="flex justify-between items-center border-b pb-2">
+              <h3 class="font-black text-xs text-[#1A1A1A]">Add Raw Seed Stock</h3>
+              <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="space-y-2.5">
+              <div><label class="text-[11px] font-bold text-gray-700 block mb-1">Date</label><input id="seed-date" type="date" value="${today}" required class="w-full p-2 text-xs rounded-xl border focus:outline-[#C0392B]" /></div>
+              <div><label class="text-[11px] font-bold text-gray-700 block mb-1">Seed Variety</label>
+                <select id="seed-id" class="w-full p-2 text-xs rounded-xl border focus:outline-[#C0392B]">${SEED_TYPES.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}</select>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div><label class="text-[11px] font-bold text-gray-700 block mb-1">Qty (Kg)</label><input id="seed-qty" type="number" step="any" placeholder="e.g. 5000" required class="w-full p-2 text-xs rounded-xl border focus:outline-[#C0392B]" /></div>
+                <div><label class="text-[11px] font-bold text-gray-700 block mb-1">Rate / Kg (₹)</label><input id="seed-rate" type="number" step="any" placeholder="e.g. 65" class="w-full p-2 text-xs rounded-xl border focus:outline-[#C0392B]" /></div>
+              </div>
+              <div><label class="text-[11px] font-bold text-gray-700 block mb-1">Supplier / Mandi</label><input id="seed-supplier" type="text" placeholder="Supplier Name" class="w-full p-2 text-xs rounded-xl border focus:outline-[#C0392B]" /></div>
+            </div>
+            <div class="flex gap-2 pt-2">
+              <button type="button" onclick="closeModal()" class="flex-1 py-1.5 rounded-xl text-xs bg-gray-100 font-bold">Cancel</button>
+              <button type="submit" class="flex-1 py-1.5 rounded-xl text-xs bg-[#C0392B] text-white font-bold">Save Inward</button>
+            </div>
+          </form>
+        `;
+      } else if (type === 'oil_arrival') {
+        body.innerHTML = `
+          <form onsubmit="saveOilArrival(event)" class="p-4 space-y-3">
+            <div class="flex justify-between items-center border-b pb-2">
+              <h3 class="font-black text-xs text-[#1A1A1A]">Readymade Oil Stock Arrival</h3>
+              <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="space-y-2.5">
+              <div><label class="text-[11px] font-bold text-gray-700 block mb-1">Date</label><input id="oilarr-date" type="date" value="${today}" required class="w-full p-2 text-xs rounded-xl border focus:outline-[#C0392B]" /></div>
+              <div><label class="text-[11px] font-bold text-gray-700 block mb-1">Oil Variety Received</label>
+                <select id="oilarr-seed-id" class="w-full p-2 text-xs rounded-xl border focus:outline-[#C0392B]">${SEED_TYPES.map(s => `<option value="${s.id}">${s.name} Oil</option>`).join('')}</select>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div><label class="text-[11px] font-bold text-gray-700 block mb-1">Volume (Ltr)</label><input id="oilarr-ltr" type="number" step="any" placeholder="e.g. 500" required class="w-full p-2 text-xs rounded-xl border focus:outline-[#C0392B]" /></div>
+                <div><label class="text-[11px] font-bold text-gray-700 block mb-1">Rate / Ltr (₹)</label><input id="oilarr-rate" type="number" step="any" placeholder="e.g. 240" class="w-full p-2 text-xs rounded-xl border focus:outline-[#C0392B]" /></div>
+              </div>
+              <div><label class="text-[11px] font-bold text-gray-700 block mb-1">Supplier / Oil Mill / Vendor</label><input id="oilarr-supplier" type="text" placeholder="Vendor or Brand Name" class="w-full p-2 text-xs rounded-xl border focus:outline-[#C0392B]" /></div>
+            </div>
+            <div class="flex gap-2 pt-2">
+              <button type="button" onclick="closeModal()" class="flex-1 py-1.5 rounded-xl text-xs bg-gray-100 font-bold">Cancel</button>
+              <button type="submit" class="flex-1 py-1.5 rounded-xl text-xs bg-[#C0392B] text-white font-bold">Save Oil Stock</button>
+            </div>
+          </form>
+        `;
+      } else if (type === 'crush') {
+        body.innerHTML = `
+          <form onsubmit="saveCrush(event)" class="p-4 space-y-3">
+            <div class="flex justify-between items-center border-b pb-2">
+              <h3 class="font-black text-xs text-[#1A1A1A]">Log Crushing Batch</h3>
+              <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="space-y-2.5">
+              <div><label class="text-[11px] font-bold text-gray-700 block mb-1">Date</label><input id="crush-date" type="date" value="${today}" required class="w-full p-2 text-xs rounded-xl border focus:outline-[#C0392B]" /></div>
+              <div><label class="text-[11px] font-bold text-gray-700 block mb-1">Seed Variety</label>
+                <select id="crush-id" onchange="autoCalcCrush()" class="w-full p-2 text-xs rounded-xl border focus:outline-[#C0392B]">${SEED_TYPES.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}</select>
+              </div>
+              <div><label class="text-[11px] font-bold text-gray-700 block mb-1">Quantity Crushed (Kg)</label><input id="crush-qty" oninput="autoCalcCrush()" type="number" step="any" placeholder="e.g. 5000" required class="w-full p-2 text-xs rounded-xl border focus:outline-[#C0392B]" /></div>
+              <div class="grid grid-cols-2 gap-2 bg-rose-50/70 p-2.5 rounded-xl border border-rose-100">
+                <div><label class="text-[11px] font-black text-[#C0392B] block mb-1">Oil Output (Ltr)</label><input id="crush-oil" type="number" step="any" required placeholder="e.g. 2300" class="w-full p-2 text-xs rounded-xl border bg-white focus:outline-[#C0392B]" /></div>
+                <div><label class="text-[11px] font-black text-amber-800 block mb-1">Cake Output (Kg)</label><input id="crush-cake" type="number" step="any" required placeholder="e.g. 2800" class="w-full p-2 text-xs rounded-xl border bg-white focus:outline-[#C0392B]" /></div>
+              </div>
+            </div>
+            <div class="flex gap-2 pt-2">
+              <button type="button" onclick="closeModal()" class="flex-1 py-1.5 rounded-xl text-xs bg-gray-100 font-bold">Cancel</button>
+              <button type="submit" class="flex-1 py-1.5 rounded-xl text-xs bg-[#C0392B] text-white font-bold">Save Crushing</button>
+            </div>
+          </form>
+        `;
+      } else if (type === 'order') {
+        currentOrderTier = 'retail';
+        body.innerHTML = `
+          <form onsubmit="saveOrder(event)" class="p-4 space-y-3 max-h-[88vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-2">
+              <div>
+                <h3 class="font-black text-xs text-[#1A1A1A]">New Order Sale (Nuova Catalog)</h3>
+                <p class="text-[10px] text-gray-500 font-medium">Auto Customer Directory Registration</p>
+              </div>
+              <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- Price Tier Toggle -->
+            <div class="flex bg-gray-100 p-1 rounded-xl">
+              <button type="button" onclick="setOrderTier('retail')" id="tier-btn-retail" class="flex-1 py-1 text-xs font-black rounded-lg bg-white text-[#C0392B] shadow-sm">Retail Rate</button>
+              <button type="button" onclick="setOrderTier('wholesale')" id="tier-btn-wholesale" class="flex-1 py-1 text-xs font-black rounded-lg text-gray-600">Wholesale Rate</button>
+            </div>
+
+            <div class="space-y-2.5">
+              <div class="grid grid-cols-2 gap-2">
+                <div><label class="text-[11px] font-bold text-gray-700 block mb-1">Date</label><input id="ord-date" type="date" value="${today}" required class="w-full p-2 text-xs rounded-xl border focus:outline-[#C0392B]" /></div>
+                <div><label class="text-[11px] font-bold text-gray-700 block mb-1">Customer</label>
+                  <select id="ord-cust-select" onchange="toggleNewCustInput()" class="w-full p-2 text-xs rounded-xl border focus:outline-[#C0392B]">
+                    ${custList.map(c => `<option value="${c}" ${c === preCustomer ? 'selected' : ''}>${c}</option>`).join('')}
+                    <option value="__NEW__">➕ Add New Customer...</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- New Customer Name, City & Mobile Fields -->
+              <div id="ord-new-cust-box" class="hidden space-y-2">
+                <div>
+                  <label class="text-[11px] font-bold text-[#C0392B] block mb-1">New Customer Name *</label>
+                  <input id="ord-new-cust" type="text" placeholder="e.g. Rajesh Patil" class="w-full p-2 text-xs rounded-xl border border-rose-300 focus:outline-[#C0392B]" />
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div>
+                    <label class="text-[11px] font-bold text-[#C0392B] block mb-1">City / Delivery Area</label>
+                    <input id="ord-new-city" type="text" placeholder="e.g. Hadapsar, Pune" class="w-full p-2 text-xs rounded-xl border border-rose-300 focus:outline-[#C0392B]" />
+                  </div>
+                  <div>
+                    <label class="text-[11px] font-bold text-[#C0392B] block mb-1">Customer Mobile Number</label>
+                    <input id="ord-new-phone" type="tel" placeholder="e.g. 9876543210" class="w-full p-2 text-xs rounded-xl border border-rose-300 focus:outline-[#C0392B]" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Existing Customer City & Mobile Override -->
+              <div id="ord-exist-cust-box" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label class="text-[11px] font-bold text-gray-700 block mb-1">City / Area</label>
+                  <input id="ord-city-val" type="text" placeholder="e.g. Uruli Devachi, Pune" class="w-full p-2 text-xs rounded-xl border border-gray-300 focus:outline-[#C0392B]" />
+                </div>
+                <div>
+                  <label class="text-[11px] font-bold text-gray-700 block mb-1">Mobile Number</label>
+                  <input id="ord-phone-val" type="tel" placeholder="e.g. 9876543210" class="w-full p-2 text-xs rounded-xl border border-gray-300 focus:outline-[#C0392B]" />
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 p-2 bg-rose-50/70 rounded-xl border border-rose-100">
+                <input id="ord-delivered-check" type="checkbox" class="w-4 h-4 text-[#C0392B] rounded border-gray-300" />
+                <label for="ord-delivered-check" class="text-xs font-bold text-gray-700">Mark as Delivered Immediately</label>
+              </div>
+
+              <div class="space-y-2 pt-1">
+                <div class="flex justify-between items-center">
+                  <span class="text-[11px] font-extrabold text-[#C0392B] uppercase tracking-wider">Product Varieties</span>
+                  <button type="button" onclick="addOrderRow()" class="text-[11px] bg-rose-50 text-[#C0392B] border border-rose-200 px-2 py-0.5 rounded-lg font-bold hover:bg-rose-100">+ Add Variety</button>
+                </div>
+                <div id="order-rows-container" class="space-y-2"></div>
+              </div>
+
+              <div class="p-3 bg-rose-50/90 rounded-xl border border-rose-200 flex justify-between items-center">
+                <span class="text-xs font-bold text-[#C0392B]">Total Bill Amount:</span>
+                <span id="ord-total-display" class="text-sm font-black text-[#C0392B]">₹0</span>
+              </div>
+            </div>
+            <div class="flex gap-2 pt-2">
+              <button type="button" onclick="closeModal()" class="flex-1 py-2 rounded-xl text-xs bg-gray-100 font-bold">Cancel</button>
+              <button type="submit" class="flex-1 py-2 rounded-xl text-xs bg-[#C0392B] text-white font-bold">Save Order</button>
+            </div>
+          </form>
+        `;
+        addOrderRow();
+        toggleNewCustInput();
+      } else if (type === 'payment') {
+        body.innerHTML = `
+          <form onsubmit="savePayment(event)" class="p-4 space-y-3">
+            <div class="flex justify-between items-center border-b pb-2">
+              <h3 class="font-black text-xs text-[#1A1A1A]">Log Payment Received</h3>
+              <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="space-y-2.5">
+              <div><label class="text-[11px] font-bold text-gray-700 block mb-1">Date</label><input id="pay-date" type="date" value="${today}" required class="w-full p-2 text-xs rounded-xl border focus:outline-[#C0392B]" /></div>
+              <div><label class="text-[11px] font-bold text-gray-700 block mb-1">Select Customer</label>
+                <select id="pay-cust" class="w-full p-2 text-xs rounded-xl border focus:outline-[#C0392B]">
+                  ${custList.map(c => `<option value="${c}" ${c === preCustomer ? 'selected' : ''}>${c}</option>`).join('')}
+                </select>
+              </div>
+              <div><label class="text-[11px] font-bold text-gray-700 block mb-1">Amount Received (₹)</label><input id="pay-amount" type="number" step="any" placeholder="e.g. 25000" required class="w-full p-2 text-xs rounded-xl border focus:outline-[#C0392B]" /></div>
+              <div><label class="text-[11px] font-bold text-gray-700 block mb-1">Payment Method</label>
+                <select id="pay-mode" class="w-full p-2 text-xs rounded-xl border focus:outline-[#C0392B]">
+                  <option value="Bank Transfer / UPI">Bank Transfer / UPI</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Cheque">Cheque</option>
+                </select>
+              </div>
+            </div>
+            <div class="flex gap-2 pt-2">
+              <button type="button" onclick="closeModal()" class="flex-1 py-1.5 rounded-xl text-xs bg-gray-100 font-bold">Cancel</button>
+              <button type="submit" class="flex-1 py-1.5 rounded-xl text-xs bg-[#C0392B] text-white font-bold">Save Payment</button>
+            </div>
+          </form>
+        `;
+      }
+      document.getElementById('modal-container').classList.remove('hidden');
+    }
+
+    function setOrderTier(tier) {
+      currentOrderTier = tier;
+      document.getElementById('tier-btn-retail').className = (tier === 'retail') ? 'flex-1 py-1 text-xs font-black rounded-lg bg-white text-[#C0392B] shadow-sm' : 'flex-1 py-1 text-xs font-black rounded-lg text-gray-600';
+      document.getElementById('tier-btn-wholesale').className = (tier === 'wholesale') ? 'flex-1 py-1 text-xs font-black rounded-lg bg-white text-[#C0392B] shadow-sm' : 'flex-1 py-1 text-xs font-black rounded-lg text-gray-600';
+
+      const rows = document.querySelectorAll('.order-row-item');
+      rows.forEach(row => {
+        const prodSelect = row.querySelector('.ord-prod-name');
+        const rateInput = row.querySelector('.ord-prod-rate');
+        const unitInput = row.querySelector('.ord-prod-unit');
+        const selectedKey = prodSelect.getAttribute('data-product-key') || prodSelect.value;
+
+        const keys = Object.keys(CATALOG_RATES);
+        prodSelect.innerHTML = keys.map(k => `
+          <option value="${k}" ${k === selectedKey ? 'selected' : ''}>
+            ${k} (₹${CATALOG_RATES[k][currentOrderTier]})
+          </option>
+        `).join('');
+
+        const prodInfo = CATALOG_RATES[selectedKey];
+        if (prodInfo) {
+          rateInput.value = prodInfo[currentOrderTier];
+          unitInput.value = prodInfo.unit;
+        }
+      });
+      calcOrderTotal();
+    }
+
+    function toggleNewCustInput() {
+      const sel = document.getElementById('ord-cust-select');
+      const newBox = document.getElementById('ord-new-cust-box');
+      const existBox = document.getElementById('ord-exist-cust-box');
+      const cityInput = document.getElementById('ord-city-val');
+      const phoneInput = document.getElementById('ord-phone-val');
+
+      if (sel && newBox) {
+        const isNew = (sel.value === '__NEW__');
+        newBox.classList.toggle('hidden', !isNew);
+        if (existBox) existBox.classList.toggle('hidden', isNew);
+
+        if (isNew) {
+          document.getElementById('ord-new-cust').focus();
+        } else {
+          const found = customers.find(c => c.name === sel.value);
+          if (found) {
+            if (cityInput) cityInput.value = found.city || '';
+            if (phoneInput) phoneInput.value = found.phone || '';
+          }
+        }
+      }
+    }
+
+    function addOrderRow() {
+      const container = document.getElementById('order-rows-container');
+      const count = container.children.length;
+      if (count >= 4) return;
+
+      const keys = Object.keys(CATALOG_RATES);
+      const defaultProd = keys[0];
+      const defaultInfo = CATALOG_RATES[defaultProd];
+
+      const div = document.createElement('div');
+      div.className = 'order-row-item p-3 bg-rose-50/40 rounded-xl border border-rose-100 space-y-2 relative';
+      div.innerHTML = `
+        <div class="flex justify-between items-center">
+          <span class="text-[10px] font-black text-[#C0392B] uppercase">Variety #${count + 1}</span>
+          ${count > 0 ? `<button type="button" onclick="this.closest('div.order-row-item').remove(); calcOrderTotal();" class="text-red-500 text-xs"><i class="fa-solid fa-trash"></i></button>` : ''}
+        </div>
+        <select data-product-key="${defaultProd}" onchange="onProductSelectChange(this)" class="ord-prod-name w-full p-2 text-xs rounded-xl border bg-white focus:outline-[#C0392B] font-medium">
+          ${keys.map(k => `<option value="${k}">${k} (₹${CATALOG_RATES[k][currentOrderTier]})</option>`).join('')}
+        </select>
+        <div class="grid grid-cols-3 gap-2">
+          <div><label class="text-[10px] font-bold text-gray-500 block">Qty</label><input type="number" step="any" oninput="calcOrderTotal()" required placeholder="Qty" class="ord-prod-qty w-full p-2 text-xs rounded-xl border bg-white focus:outline-[#C0392B]" /></div>
+          <div><label class="text-[10px] font-bold text-gray-500 block">Unit</label>
+            <input type="text" readonly value="${defaultInfo.unit}" class="ord-prod-unit w-full p-2 text-xs rounded-xl border bg-gray-100 text-gray-700 font-medium" />
+          </div>
+          <div><label class="text-[10px] font-bold text-gray-500 block">Rate (₹)</label><input type="number" step="any" value="${defaultInfo[currentOrderTier]}" oninput="calcOrderTotal()" required class="ord-prod-rate w-full p-2 text-xs rounded-xl border bg-white focus:outline-[#C0392B] font-bold" /></div>
+        </div>
+      `;
+      container.appendChild(div);
+      calcOrderTotal();
+    }
+
+    function onProductSelectChange(sel) {
+      const row = sel.closest('.order-row-item');
+      sel.setAttribute('data-product-key', sel.value);
+      const prodInfo = CATALOG_RATES[sel.value];
+      if (prodInfo) {
+        row.querySelector('.ord-prod-unit').value = prodInfo.unit;
+        row.querySelector('.ord-prod-rate').value = prodInfo[currentOrderTier] || prodInfo.retail;
+      }
+      calcOrderTotal();
+    }
+
+    function calcOrderTotal() {
+      let sum = 0;
+      const qtys = document.querySelectorAll('.ord-prod-qty');
+      const rates = document.querySelectorAll('.ord-prod-rate');
+      qtys.forEach((q, i) => {
+        sum += (Number(q.value || 0) * Number(rates[i]?.value || 0));
+      });
+      document.getElementById('ord-total-display').innerText = '₹' + sum.toLocaleString();
+    }
+
+    function autoCalcCrush() {
+      const seedId = document.getElementById('crush-id').value;
+      const qty = Number(document.getElementById('crush-qty').value || 0);
+      const seed = SEED_TYPES.find(s => s.id === seedId);
+      if (qty > 0 && seed) {
+        document.getElementById('crush-oil').value = Math.round((qty * (seed.yieldOil / 100)) / 0.91);
+        document.getElementById('crush-cake').value = Math.round(qty * (seed.yieldCake / 100));
+      }
+    }
+
+    // Save Handlers
+    async function saveEntry(data) {
+      if (db) {
+        if (editingLogId) {
+          await db.collection('logs').doc(editingLogId).update({ ...data, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+        } else {
+          await db.collection('logs').add({ ...data, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        }
+      } else {
+        if (editingLogId) {
+          logs = logs.map(l => l.id === editingLogId ? { ...l, ...data } : l);
+        } else {
+          logs.unshift({ id: Date.now().toString(), ...data });
+        }
+        localStorage.setItem('sji_logs_v27', JSON.stringify(logs));
+        renderAll();
+      }
+      closeModal();
+    }
+
+    function saveSeed(e) {
+      e.preventDefault();
+      const seedId = document.getElementById('seed-id').value;
+      const seed = SEED_TYPES.find(s => s.id === seedId);
+      const qty = Number(document.getElementById('seed-qty').value);
+      const rate = Number(document.getElementById('seed-rate').value || 0);
+      const supplier = document.getElementById('seed-supplier').value;
+
+      saveEntry({
+        type: 'seed',
+        seedId,
+        supplier,
+        quantity: qty,
+        unit: 'Kg',
+        rate,
+        amount: qty * rate,
+        details: `Inward: ${seed.name} from ${supplier || 'Market'}`,
+        date: document.getElementById('seed-date').value
+      });
+    }
+
+    function saveOilArrival(e) {
+      e.preventDefault();
+      const seedId = document.getElementById('oilarr-seed-id').value;
+      const seed = SEED_TYPES.find(s => s.id === seedId);
+      const ltr = Number(document.getElementById('oilarr-ltr').value);
+      const rate = Number(document.getElementById('oilarr-rate').value || 0);
+      const supplier = document.getElementById('oilarr-supplier').value;
+
+      saveEntry({
+        type: 'oil_arrival',
+        seedId,
+        supplier,
+        oilLtr: ltr,
+        rate,
+        amount: ltr * rate,
+        details: `Inward: ${ltr} Ltr ${seed.name} Oil from ${supplier || 'Vendor'}`,
+        date: document.getElementById('oilarr-date').value
+      });
+    }
+
+    function saveCrush(e) {
+      e.preventDefault();
+      const seedId = document.getElementById('crush-id').value;
+      const seed = SEED_TYPES.find(s => s.id === seedId);
+      const qty = Number(document.getElementById('crush-qty').value);
+      const oilLtr = Number(document.getElementById('crush-oil').value);
+      const cakeKg = Number(document.getElementById('crush-cake').value);
+
+      saveEntry({
+        type: 'crush',
+        seedId,
+        quantity: qty,
+        unit: 'Kg',
+        oilLtr,
+        cakeKg,
+        details: `Crushed ${qty} Kg ${seed.name} (Yield: ${oilLtr} Ltr Oil, ${cakeKg} Kg Cake)`,
+        date: document.getElementById('crush-date').value
+      });
+    }
+
+    async function saveOrder(e) {
+      e.preventDefault();
+      let cust = document.getElementById('ord-cust-select').value;
+      let city = '';
+      let phone = '';
+
+      if (cust === '__NEW__' || !cust) {
+        cust = document.getElementById('ord-new-cust').value.trim();
+        city = document.getElementById('ord-new-city').value.trim();
+        phone = document.getElementById('ord-new-phone').value.trim();
+        if (!cust) return;
+
+        if (db) {
+          await db.collection('customers').add({
+            name: cust,
+            city: city || 'Local Area',
+            phone: phone || '',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        } else {
+          customers.push({ id: Date.now().toString(), name: cust, city: city || 'Local Area', phone: phone || '' });
+          localStorage.setItem('sji_customers_v27', JSON.stringify(customers));
+        }
+      } else {
+        city = document.getElementById('ord-city-val')?.value.trim() || '';
+        phone = document.getElementById('ord-phone-val')?.value.trim() || '';
+
+        const existCust = customers.find(c => c.name === cust);
+        if (existCust) {
+          const updates = {};
+          if (city && city !== existCust.city) updates.city = city;
+          if (phone && phone !== existCust.phone) updates.phone = phone;
+
+          if (Object.keys(updates).length > 0) {
+            if (db && existCust.id) {
+              await db.collection('customers').doc(existCust.id).update(updates);
+            } else {
+              Object.assign(existCust, updates);
+              localStorage.setItem('sji_customers_v27', JSON.stringify(customers));
+            }
+          }
+        }
+      }
+
+      const rows = document.querySelectorAll('.order-row-item');
+      const items = [];
+      let total = 0;
+
+      rows.forEach(row => {
+        const prodSelect = row.querySelector('.ord-prod-name');
+        const qtyInput = row.querySelector('.ord-prod-qty');
+        const unitInput = row.querySelector('.ord-prod-unit');
+        const rateInput = row.querySelector('.ord-prod-rate');
+
+        const q = Number(qtyInput.value);
+        const r = Number(rateInput.value);
+        const prodName = prodSelect.getAttribute('data-product-key') || prodSelect.value;
+
+        if (q > 0) {
+          items.push({ product: prodName, quantity: q, unit: unitInput.value, rate: r });
+          total += (q * r);
+        }
+      });
+
+      if (items.length === 0) return alert("Add at least one product variety.");
+
+      const isDelivered = document.getElementById('ord-delivered-check')?.checked || false;
+
+      saveEntry({
+        type: 'order',
+        customer: cust,
+        city: city,
+        phone: phone,
+        tier: currentOrderTier,
+        delivered: isDelivered,
+        deliveryDate: isDelivered ? document.getElementById('ord-date').value : null,
+        items,
+        totalAmount: total,
+        date: document.getElementById('ord-date').value
+      });
+    }
+
+    function savePayment(e) {
+      e.preventDefault();
+      const cust = document.getElementById('pay-cust').value;
+      const amt = Number(document.getElementById('pay-amount').value);
+      const mode = document.getElementById('pay-mode').value;
+
+      saveEntry({
+        type: 'payment',
+        customer: cust,
+        amount: amt,
+        mode,
+        details: `Payment from ${cust} via ${mode}`,
+        date: document.getElementById('pay-date').value
+      });
+    }
+
+    async function handleManualCustomer(e) {
+      e.preventDefault();
+      const name = document.getElementById('new-cust-name').value.trim();
+      const phone = document.getElementById('new-cust-phone').value.trim();
+      const city = document.getElementById('new-cust-city').value.trim();
+      if (!name) return;
+
+      if (db) {
+        await db.collection('customers').add({ name, phone, city, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+      } else {
+        customers.push({ id: Date.now().toString(), name, phone, city });
+        localStorage.setItem('sji_customers_v27', JSON.stringify(customers));
+        renderAll();
+      }
+      document.getElementById('new-cust-name').value = '';
+      document.getElementById('new-cust-phone').value = '';
+      document.getElementById('new-cust-city').value = '';
+    }
+
+    async function deleteLog(id) {
+      if (!confirm("Are you sure you want to delete this record?")) return;
+      if (db) {
+        await db.collection('logs').doc(id).delete();
+      } else {
+        logs = logs.filter(l => l.id !== id);
+        localStorage.setItem('sji_logs_v27', JSON.stringify(logs));
+        renderAll();
+      }
+    }
+
+    function editLog(id) {
+      const log = logs.find(l => l.id === id);
+      if (!log) return;
+      openModal(log.type, log.customer || log.supplier || '');
+      editingLogId = id;
+    }
+  </script>
+</body>
+</html>
